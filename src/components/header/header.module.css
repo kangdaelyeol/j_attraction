@@ -1,5 +1,4 @@
 .container{
-  height: 100px;
   background-color: orange;
   display: flex;
   justify-content: center;
@@ -8,8 +7,8 @@
 
 .container div{
   width: 33%;
+  padding: 15px 0;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-
