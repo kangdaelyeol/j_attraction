@@ -17,7 +17,7 @@ const Main = () => {
 		const loc = e.target.dataset.name;
 		navigate(`/${loc}`);
 	};
-
+	
 	return (
 		<div className={Styles.container}>
 			<div className={Styles.nav}>
@@ -57,7 +57,7 @@ const Main = () => {
 					</div>
 					<div
 						onClick={onNavClick}
-						data-name='enroll'
+						data-name='create'
 						className={Styles.enroll}
 					>
 						여행 등록
