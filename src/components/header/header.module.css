@@ -3,11 +3,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 60px;
 }
 
 .container div{
   width: 33%;
-  padding: 15px 0;
   display: flex;
   justify-content: center;
   align-items: center;

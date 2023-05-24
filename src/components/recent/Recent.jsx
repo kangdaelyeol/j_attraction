@@ -1,5 +1,5 @@
 import React from 'react';
-import Styles from "./recent.module.css";
+import Styles from './recent.module.css';
 
 const Recent = () => {
 	return (
@@ -13,6 +13,5 @@ const Recent = () => {
 		</div>
 	);
 };
-
 
 export default Recent;

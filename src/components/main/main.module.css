@@ -1,0 +1,24 @@
+.container{
+  display: flex;
+  width: 100%;
+}
+.nav {
+  display: flex;
+  flex-direction: column;
+  background-color: powderblue;
+}
+
+.top, .bottom {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 20px;
+}
+
+.top div, .bottom div {
+  border: 1px solid black;
+  padding: 10px;
+  width: 150px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
