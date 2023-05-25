@@ -12,6 +12,11 @@ import Day from './Day';
 
 const Create = () => {
 	const [day, setDay] = useState([]);
+  const [currentDay, setCurrentDay] = useState(0);
+
+  const onDayClick = (index) => {
+    return setCurrentDay(index);
+  }
 
 	const onAddDayClick = () => {
 		setDay((day) => {
@@ -33,7 +38,6 @@ const Create = () => {
 				});
 			}
 		});
-		console.log(index, newDays);
 		return setDay(newDays);
 	};
 
@@ -59,12 +63,13 @@ const Create = () => {
 						<div
 							key={index}
 							data-index={v.day}
-							onClick={(e) => {
-								onRemoveDayClick(v.day);
-							}}
+              onClick={() => {onDayClick(v.day)}}
 							className='day'
 						>
 							day{v.day}
+              <button onClick={(e) => {
+								onRemoveDayClick(v.day);
+							}}>remove</button>
 						</div>
 					);
 				})}
@@ -72,7 +77,8 @@ const Create = () => {
 					addDay
 				</div>
 			</div>
-			<Day />
+      {currentDay > 0 ? <Day info={day[currentDay - 1]}/> : ""}
+			
       <button className="save">save!</button>
 		</div>
 	);
