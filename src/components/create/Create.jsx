@@ -12,11 +12,11 @@ import Day from './Day';
 
 const Create = () => {
 	const [day, setDay] = useState([]);
-  const [currentDay, setCurrentDay] = useState(0);
+	const [currentDay, setCurrentDay] = useState(0);
 
-  const onDayClick = (index) => {
-    return setCurrentDay(index);
-  }
+	const onDayClick = (index) => {
+		return setCurrentDay(index);
+	};
 
 	const onAddDayClick = () => {
 		setDay((day) => {
@@ -38,6 +38,8 @@ const Create = () => {
 				});
 			}
 		});
+		setCurrentDay(0);
+	
 		return setDay(newDays);
 	};
 
@@ -56,20 +58,33 @@ const Create = () => {
 				<input type='text' placeholder='Budget' />
 				<input type='text' placeholder='Duration' />
 			</div>
-			<textarea name='introduction' id='introduction' cols='30' rows='10' placeholder='간단한 여행 소개'></textarea>
+			<textarea
+				name='introduction'
+				id='introduction'
+				cols='30'
+				rows='10'
+				placeholder='간단한 여행 소개'
+			></textarea>
 			<div className='daybox'>
 				{day.map((v, index) => {
 					return (
-						<div
-							key={index}
-							data-index={v.day}
-              onClick={() => {onDayClick(v.day)}}
-							className='day'
-						>
-							day{v.day}
-              <button onClick={(e) => {
-								onRemoveDayClick(v.day);
-							}}>remove</button>
+						<div key={index} className='day'>
+							<div
+								className='dayset'
+								data-index={v.day}
+								onClick={() => {
+									onDayClick(v.day);
+								}}
+							>
+								day{v.day}
+							</div>
+							<button
+								onClick={(e) => {
+									onRemoveDayClick(index + 1);
+								}}
+							>
+								remove
+							</button>
 						</div>
 					);
 				})}
@@ -77,9 +92,9 @@ const Create = () => {
 					addDay
 				</div>
 			</div>
-      {currentDay > 0 ? <Day info={day[currentDay - 1]}/> : ""}
-			
-      <button className="save">save!</button>
+			{currentDay > 0 ? <Day info={day[currentDay - 1]} /> : ''}
+
+			<button className='save'>save!</button>
 		</div>
 	);
 };
