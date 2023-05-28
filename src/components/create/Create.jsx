@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import Styles from './create.module.css';
 import Day from './Day';
+import { Wrapper, Status } from '@googlemaps/react-wrapper';
+import Gmap from './Gmap';
+
 /** required
  * google Map
  * title
@@ -9,7 +12,9 @@ import Day from './Day';
  * * route (locations of places)
  * * place (spendingTime, price, des), moving(way, spendingtime, tips), pictures[]
  */
-
+const render = (status) => {
+	return <h1>{status}</h1>;
+};
 const Create = () => {
 	const [day, setDay] = useState([]);
 	const [currentDay, setCurrentDay] = useState(0);
@@ -88,10 +93,16 @@ const Create = () => {
 						</div>
 					);
 				})}
-				<div onClick={onAddDayClick} className='addday'>
+				<div onClick={onAddDayClick} className={Styles.add_day}>
 					addDay
 				</div>
 			</div>
+			<Wrapper
+					apiKey={process.env.REACT_APP_GOOGLEMAP_API_KEY}
+					render={render}
+				>
+					<Gmap />
+				</Wrapper>
 			{currentDay > 0 ? <Day info={day[currentDay - 1]} /> : ''}
 
 			<button className='save'>save!</button>
