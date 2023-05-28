@@ -17,14 +17,14 @@ const Gmap = () => {
 				})
 			);
 		}
-
+    let listenerMarker1;
     if (map) {
-      map.addListener("click", onMapClick);
+      listenerMarker1 = map.addListener("click", onMapClick);
     }
 
     return () => {
       if (map) {
-        map.removeListener("click", onMapClick);
+        window.google.maps.event.clearListeners(listenerMarker1)
       }
     }
 	}, [ref, map]);
