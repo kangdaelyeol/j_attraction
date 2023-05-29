@@ -99,6 +99,7 @@ const Create = () => {
 			<Wrapper
 					apiKey={process.env.REACT_APP_GOOGLEMAP_API_KEY}
 					render={render}
+					libraries={['places']}
 				>
 					<Gmap />
 				</Wrapper>

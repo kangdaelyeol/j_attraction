@@ -3,7 +3,6 @@ import { renderToString } from 'react-dom/server';
 import ReactDOM from 'react-dom';
 
 const InfoViewForMarker = ({ marker, removeMarker }) => {
-
 	return (
 		<div className='info__view'>
 			<div className='h3'>{marker.getTitle()}</div>
@@ -18,8 +17,27 @@ const Gmap = () => {
 	const ref = useRef(null);
 	const [map, setMap] = useState();
 	const [markers, setMarkers] = useState([]);
+
+	const getDetails = async (map, placeId) => {
+		const request = {
+			placeId: placeId,
+			fields: ['name', 'rating', 'formatted_address', 'opening_hours'],
+		};
+
+		try {
+			new window.google.maps.places.PlacesService(map).getDetails(
+				request,
+				(result, _) => {
+					console.log(result, _);
+				}
+			);
+		} catch (error) {
+			console.error('Failed to fetch place details:', error);
+		}
+	};
+
 	const onMapClick = useCallback(
-		(e) => {
+		async (e) => {
 			console.log(e);
 			const lat = e.latLng.lat();
 			const lng = e.latLng.lng();
@@ -28,13 +46,17 @@ const Gmap = () => {
 				position: myLatlng,
 				title: 'Hello World!',
 			});
-      const removeMarker = (e) => {
-        console.log(e);
-        marker.setMap(null);
-        setMarkers((markers) => markers.filter((m) => m !== marker));
-      };
 
-			const infoViewContent =(
+			// getDetails
+			if (e.placeId) await getDetails(map, e.placeId);
+
+			const removeMarker = (e) => {
+				console.log(e);
+				marker.setMap(null);
+				setMarkers((markers) => markers.filter((m) => m !== marker));
+			};
+
+			const infoViewContent = (
 				<InfoViewForMarker marker={marker} removeMarker={removeMarker} />
 			);
 			const infoWindow = new window.google.maps.InfoWindow({
@@ -45,7 +67,7 @@ const Gmap = () => {
 				infoWindow.open(map, marker);
 			});
 
-      infoWindow.setContent(renderToString(infoViewContent))
+			infoWindow.setContent(renderToString(infoViewContent));
 			marker.label = '123';
 			console.log(marker);
 			marker.setMap(map);
