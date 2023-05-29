@@ -88,7 +88,6 @@ const Create = () => {
 									onRemoveDayClick(index + 1);
 								}}
 							>
-								remove
 							</button>
 						</div>
 					);
