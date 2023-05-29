@@ -1,33 +1,66 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { renderToString } from 'react-dom/server';
+import ReactDOM from 'react-dom';
+
+const InfoViewForMarker = ({ marker, removeMarker }) => {
+
+	return (
+		<div className='info__view'>
+			<div className='h3'>{marker.getTitle()}</div>
+			<button className='rm' onClick={(e) => removeMarker(e)}>
+				remove 제발 십라
+			</button>
+		</div>
+	);
+};
+
 const Gmap = () => {
 	const ref = useRef(null);
 	const [map, setMap] = useState();
-  const [markers, setMarkers] = useState([]);
+	const [markers, setMarkers] = useState([]);
+	const onMapClick = useCallback(
+		(e) => {
+			console.log(e);
+			const lat = e.latLng.lat();
+			const lng = e.latLng.lng();
+			const myLatlng = new window.google.maps.LatLng(lat, lng);
+			const marker = new window.google.maps.Marker({
+				position: myLatlng,
+				title: 'Hello World!',
+			});
+      const removeMarker = (e) => {
+        console.log(e);
+        marker.setMap(null);
+        setMarkers((markers) => markers.filter((m) => m !== marker));
+      };
 
-	const onMapClick = useCallback ((e) => {
-    const lat = e.latLng.lat();
-    const lng = e.latLng.lng();
-    const myLatlng = new window.google.maps.LatLng(lat, lng);
-    const marker = new window.google.maps.Marker({
-			position: myLatlng,
-			title: 'Hello World!',
-		});
-    console.log(marker);
-    marker.setMap(map);
-    setMarkers(markers => {
-      const newMarker = [...markers, marker];
-      console.log(markers);
-      if(newMarker.length > 5){
-        newMarker[1].setMap(null);
-        newMarker.shift();
-      }
-      return newMarker;
-    })
-	}, [map]);
+			const infoViewContent =(
+				<InfoViewForMarker marker={marker} removeMarker={removeMarker} />
+			);
+			const infoWindow = new window.google.maps.InfoWindow({
+				content: '',
+			});
 
-  const onMouseMove = (e) => {
-    console.log(e);
-  }
+			marker.addListener('click', () => {
+				infoWindow.open(map, marker);
+			});
+
+      infoWindow.setContent(renderToString(infoViewContent))
+			marker.label = '123';
+			console.log(marker);
+			marker.setMap(map);
+
+			setMarkers((markers) => {
+				const newMarker = [...markers, marker];
+				return newMarker;
+			});
+		},
+		[map]
+	);
+
+	const onMouseMove = (e) => {
+		console.log(e);
+	};
 
 	useEffect(() => {
 		if (ref.current && !map) {
@@ -44,16 +77,16 @@ const Gmap = () => {
 			);
 		}
 		let listenerMarker1;
-    let listenerMarker2;
+		let listenerMarker2;
 		if (map) {
 			listenerMarker1 = map.addListener('click', onMapClick);
-      listenerMarker2 = map.addListener("dblclick", onMouseMove);
+			listenerMarker2 = map.addListener('dblclick', onMouseMove);
 		}
 
 		return () => {
 			if (map) {
 				window.google.maps.event.clearListeners(listenerMarker1);
-        window.google.maps.event.clearListeners(listenerMarker2);
+				window.google.maps.event.clearListeners(listenerMarker2);
 			}
 		};
 	}, [ref, map]);
