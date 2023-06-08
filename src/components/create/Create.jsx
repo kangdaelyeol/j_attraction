@@ -18,6 +18,26 @@ const render = (status) => {
 const Create = () => {
 	const [day, setDay] = useState([]);
 	const [currentDay, setCurrentDay] = useState(0);
+	const [markers, setMarkers] = useState([]);
+	const [currentMarker, setCurrentMarker] = useState(null);
+	const [map, setMap] = useState();
+
+
+	// To remove currentMarker when you click remove button
+	const onMarkerDelete = (marker) => {
+		// 구글 맵 api를 통한 마커 제거
+		marker.setMap(null);
+		// state상의 marker 제거, 정렬
+		setMarkers((current) => {
+			console.log(current);
+			const result = [];
+			current.forEach((m) => {
+				if (marker !== m) result.push(m);
+			});
+			console.log(result);
+			return result;
+		});
+	};
 
 	const onDayClick = (index) => {
 		return setCurrentDay(index);
@@ -44,7 +64,7 @@ const Create = () => {
 			}
 		});
 		setCurrentDay(0);
-	
+
 		return setDay(newDays);
 	};
 
@@ -87,8 +107,7 @@ const Create = () => {
 								onClick={(e) => {
 									onRemoveDayClick(index + 1);
 								}}
-							>
-							</button>
+							></button>
 						</div>
 					);
 				})}
@@ -96,13 +115,21 @@ const Create = () => {
 					addDay
 				</div>
 			</div>
+			<button onClick={() => onMarkerDelete(currentMarker)}>removecurrnet</button>
 			<Wrapper
-					apiKey={process.env.REACT_APP_GOOGLEMAP_API_KEY}
-					render={render}
-					libraries={['places']}
-				>
-					<Gmap />
-				</Wrapper>
+				apiKey={process.env.REACT_APP_GOOGLEMAP_API_KEY}
+				render={render}
+				libraries={['places']}
+			>
+				<Gmap
+					markers={markers}
+					setMarkers={setMarkers}
+					currentMarker={currentMarker}
+					setCurrentMarker={setCurrentMarker}
+					map={map}
+					setMap={setMap}
+				/>
+			</Wrapper>
 			{currentDay > 0 ? <Day info={day[currentDay - 1]} /> : ''}
 
 			<button className='save'>save!</button>
