@@ -1,71 +1,73 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { renderToString } from 'react-dom/server';
-import ReactDOM from 'react-dom';
 
-const InfoViewForMarker = ({ marker, removeMarker }) => {
-	
+function getDetailsPromise(service, request) {
+	return new Promise((resolve, reject) => {
+		service.getDetails(request, (result, status) => {
+			if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+				resolve(result);
+			} else {
+				reject(status);
+			}
+		});
+	});
+}
+
+const InfoViewForMarker = ({ marker }) => {
 	return (
 		<div className='info__view'>
 			<div className='h3'>{marker.getTitle()}</div>
-			<button className='rm' onClick={(e) => removeMarker(e)}>
-				remove 제발 십라
-			</button>
 		</div>
 	);
 };
 
-const Gmap = ({markers, setMarkers, currentMarker, setCurrentMarker, map, setMap}) => {
+const Gmap = ({
+	markers,
+	setMarkers,
+	currentMarker,
+	setCurrentMarker,
+	map,
+	setMap,
+}) => {
 	const ref = useRef(null);
-	
-	
-	
-	
+
+	// return mapName
 	const getDetails = async (map, placeId) => {
 		const request = {
 			placeId: placeId,
 			fields: ['name', 'rating', 'formatted_address', 'opening_hours'],
 		};
 
-			new window.google.maps.places.PlacesService(map).getDetails(
-				request,
-				(result, _) => {
-					console.log(result, _);
-          const {formatted_address, name} = result;
-          const placeInfo = {formatted_address, name};
-				}
-			);
+		try {
+			const service = new window.google.maps.places.PlacesService(map);
+			const result = await getDetailsPromise(service, request);
+			const { name } = result;
+			
+			return name;
+		} catch (error) {
+			console.error('Error occurred:', error);
+		}
 	};
-	
-	console.log("currentMarker:",currentMarker, markers.indexOf(currentMarker));
+
+	console.log('currentMarker:', currentMarker, markers.indexOf(currentMarker));
 
 	const onMapClick = useCallback(
 		async (e) => {
-			console.log(e);
 			const lat = e.latLng.lat();
 			const lng = e.latLng.lng();
+			const placename = e.placeId ? await getDetails(map, e.placeId) : "place"
 			const myLatlng = new window.google.maps.LatLng(lat, lng);
 			const marker = new window.google.maps.Marker({
 				position: myLatlng,
-				title: 'Hello World!',
+				title: placename,
 			});
 
-			// getDetails
-			if (e.placeId) await getDetails(map, e.placeId);
-
-			const removeMarker = () => {
-				marker.setMap(null);
-				setMarkers((markers) => markers.filter((m) => m !== marker));
-			};
-
-			const infoViewContent = (
-				<InfoViewForMarker marker={marker} removeMarker={removeMarker} />
-			);
+			const infoViewContent = <InfoViewForMarker marker={marker} />;
 			const infoWindow = new window.google.maps.InfoWindow({
-				content: '',
+				content: '<h1>dPdkf</h1>',
 			});
 
 			marker.addListener('click', (e) => {
-				console.log(e);
 				infoWindow.open(map, marker);
 				setCurrentMarker(marker);
 			});
@@ -75,12 +77,14 @@ const Gmap = ({markers, setMarkers, currentMarker, setCurrentMarker, map, setMap
 			console.log(marker);
 			marker.setMap(map);
 
+
+			// It will alternate to addaMarker
 			setMarkers((markers) => {
 				const newMarker = [...markers, marker];
 				return newMarker;
 			});
 		},
-		[map]
+		[map, setCurrentMarker, setMarkers]
 	);
 
 	const onMouseMove = (e) => {

@@ -3,7 +3,7 @@ import Styles from './create.module.css';
 import Day from './Day';
 import { Wrapper, Status } from '@googlemaps/react-wrapper';
 import Gmap from './Gmap';
-
+import { Trip, Date } from '../../schema.js';
 /** required
  * google Map
  * title
@@ -15,57 +15,77 @@ import Gmap from './Gmap';
 const render = (status) => {
 	return <h1>{status}</h1>;
 };
-const Create = () => {
-	const [day, setDay] = useState([]);
-	const [currentDay, setCurrentDay] = useState(0);
-	const [markers, setMarkers] = useState([]);
-	const [currentMarker, setCurrentMarker] = useState(null);
-	const [map, setMap] = useState();
 
+const Create = () => {
+	// for storing in db
+	const [trip, setTrip] = useState(new Trip());
+
+	// for change each day for editing
+	const [dayIndex, setDayIndex] = useState(0);
+	const [markers, setMarkers] = useState([]);
+
+	// value for reducing duplicated code -> to access rapidly
+	const markerst = trip.days[dayIndex]?.markers;
+	const currentDay = trip.days[dayIndex];
+
+	const addMarker = (marker) => {
+		const newMarkers = [...markerst, marker];
+		currentDay.markers = newMarkers;
+		setTrip((current) => {
+			current[dayIndex].markers = newMarkers;
+			return current;
+		});
+	};
+
+	// for editing marker info
+	const [currentMarker, setCurrentMarker] = useState(null);
+
+	// for Google map API
+	const [map, setMap] = useState();
 
 	// To remove currentMarker when you click remove button
 	const onMarkerDelete = (marker) => {
 		// 구글 맵 api를 통한 마커 제거
 		marker.setMap(null);
 		// state상의 marker 제거, 정렬
-		setMarkers((current) => {
-			console.log(current);
-			const result = [];
-			current.forEach((m) => {
-				if (marker !== m) result.push(m);
+		setTrip((current) => {
+			const newMarkers = [];
+			markerst.forEach((m) => {
+				if (marker !== m) newMarkers.push(m);
 			});
-			console.log(result);
-			return result;
+			const newTrip = { ...current };
+			newTrip.days[dayIndex].markers = newMarkers;
+			return newTrip;
 		});
 	};
 
 	const onDayClick = (index) => {
-		return setCurrentDay(index);
+		return setDayIndex(index);
 	};
 
 	const onAddDayClick = () => {
-		setDay((day) => {
-			const newday = { day: day.length + 1 };
-			return [...day, newday];
+		// create new Day;
+		const newDay = new Date();
+		// setTrip => add push new day into days;
+		return setTrip((current) => {
+			const newTrip = { ...current };
+			newTrip.days.push(newDay);
+			return newTrip;
 		});
 	};
 
-	const onRemoveDayClick = (index) => {
-		let dayIndex = 1;
+	const onRemoveDayClick = (rmIndex) => {
 		const newDays = [];
-		day.forEach((v) => {
-			console.log(v);
-			if (Number(v.day) !== Number(index)) {
-				v.day = dayIndex;
-				newDays.push({
-					...v,
-					day: dayIndex++,
-				});
-			}
+		trip.days.forEach((v, index) => {
+			if (Number(rmIndex) !== index) newDays.push({ ...v });
 		});
-		setCurrentDay(0);
+		if (newDays.length === 0) newDays.push(new Date());
 
-		return setDay(newDays);
+		return setTrip((current) => {
+			const newTrip = { ...current };
+			newTrip.days = newDays;
+			return newTrip;
+		});
 	};
 
 	return (
@@ -91,23 +111,25 @@ const Create = () => {
 				placeholder='간단한 여행 소개'
 			></textarea>
 			<div className='daybox'>
-				{day.map((v, index) => {
+				{trip.days.map((v, index) => {
 					return (
 						<div key={index} className='day'>
 							<div
 								className='dayset'
-								data-index={v.day}
+								data-index={index}
 								onClick={() => {
-									onDayClick(v.day);
+									onDayClick(index);
 								}}
 							>
-								day{v.day}
+								day{index + 1}
 							</div>
 							<button
 								onClick={(e) => {
-									onRemoveDayClick(index + 1);
+									onRemoveDayClick(index);
 								}}
-							></button>
+							>
+								remove day {index + 1}
+							</button>
 						</div>
 					);
 				})}
@@ -115,22 +137,39 @@ const Create = () => {
 					addDay
 				</div>
 			</div>
-			<button onClick={() => onMarkerDelete(currentMarker)}>removecurrnet</button>
-			<Wrapper
-				apiKey={process.env.REACT_APP_GOOGLEMAP_API_KEY}
-				render={render}
-				libraries={['places']}
-			>
-				<Gmap
-					markers={markers}
-					setMarkers={setMarkers}
-					currentMarker={currentMarker}
-					setCurrentMarker={setCurrentMarker}
-					map={map}
-					setMap={setMap}
-				/>
-			</Wrapper>
-			{currentDay > 0 ? <Day info={day[currentDay - 1]} /> : ''}
+			<div className={Styles.map__top}>
+				<Wrapper
+					apiKey={process.env.REACT_APP_GOOGLEMAP_API_KEY}
+					render={render}
+					libraries={['places']}
+				>
+					<Gmap
+						markers={markers}
+						setMarkers={setMarkers}
+						currentMarker={currentMarker}
+						setCurrentMarker={setCurrentMarker}
+						map={map}
+						setMap={setMap}
+					/>
+				</Wrapper>
+			</div>
+			<div className={Styles.map__bottom}>
+				<Day info={currentDay} index={dayIndex} />
+				<div className={Styles.target__info}>
+					<input type='text' className='placename' placeholder='지역 이름' />
+					<input type='text' className='address' placeholder='주소' />
+					<textarea
+						placeholder='설명'
+						name='description'
+						id='description'
+						cols='30'
+						rows='10'
+					></textarea>
+					<button onClick={() => onMarkerDelete(currentMarker)}>
+						removecurrnet
+					</button>
+				</div>
+			</div>
 
 			<button className='save'>save!</button>
 		</div>

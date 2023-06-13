@@ -7,12 +7,11 @@ const Marker = ({info}) => {
 }
 
 
-const Day = ({ info }) => {
-	const [markers, setMarkers] = useState([]);
-	const { day } = info;
+const Day = ({ info, index }) => {
+	console.log(index)
 	return (
 		<div className='container'>
-			<span>this is day {day}</span>
+			<span>this is day {Number(index) + 1}</span>
 			<input type='text' placeholder='짧은 소개' />
 			<div className="markers">
 				<span>places info</span>

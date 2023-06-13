@@ -9,3 +9,17 @@
   height: 100px;
   background-color: cadetblue;
 }
+
+.map__top {
+  display: flex;
+}
+
+.map__bottom{
+  display: flex;
+}
+
+.target__info {
+  border: 1px solid black;
+  display: flex;
+  flex-direction: column;
+}
