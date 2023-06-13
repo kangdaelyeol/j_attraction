@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { renderToString } from 'react-dom/server';
-
+import { Marker } from '../../schema.js';
 function getDetailsPromise(service, request) {
 	return new Promise((resolve, reject) => {
 		service.getDetails(request, (result, status) => {
@@ -16,14 +16,14 @@ function getDetailsPromise(service, request) {
 const InfoViewForMarker = ({ marker }) => {
 	return (
 		<div className='info__view'>
-			<div className='h3'>{marker.getTitle()}</div>
+			<div className='h3'>{marker.getTitle()} 123412</div>
 		</div>
 	);
 };
 
 const Gmap = ({
 	markers,
-	setMarkers,
+	addMarker,
 	currentMarker,
 	setCurrentMarker,
 	map,
@@ -42,7 +42,7 @@ const Gmap = ({
 			const service = new window.google.maps.places.PlacesService(map);
 			const result = await getDetailsPromise(service, request);
 			const { name } = result;
-			
+
 			return name;
 		} catch (error) {
 			console.error('Error occurred:', error);
@@ -55,36 +55,32 @@ const Gmap = ({
 		async (e) => {
 			const lat = e.latLng.lat();
 			const lng = e.latLng.lng();
-			const placename = e.placeId ? await getDetails(map, e.placeId) : "place"
+			const placename = e.placeId ? await getDetails(map, e.placeId) : 'place';
 			const myLatlng = new window.google.maps.LatLng(lat, lng);
 			const marker = new window.google.maps.Marker({
 				position: myLatlng,
 				title: placename,
 			});
 
+			const newMarker = new Marker(marker, marker.title);
+
 			const infoViewContent = <InfoViewForMarker marker={marker} />;
 			const infoWindow = new window.google.maps.InfoWindow({
 				content: '<h1>dPdkf</h1>',
 			});
 
-			marker.addListener('click', (e) => {
+			newMarker.marker.addListener('click', (e) => {
 				infoWindow.open(map, marker);
-				setCurrentMarker(marker);
+				setCurrentMarker(newMarker);
 			});
 
 			infoWindow.setContent(renderToString(infoViewContent));
 			marker.label = '123';
-			console.log(marker);
 			marker.setMap(map);
 
-
-			// It will alternate to addaMarker
-			setMarkers((markers) => {
-				const newMarker = [...markers, marker];
-				return newMarker;
-			});
+			addMarker(newMarker);
 		},
-		[map, setCurrentMarker, setMarkers]
+		[addMarker, map, setCurrentMarker]
 	);
 
 	const onMouseMove = (e) => {
@@ -118,7 +114,7 @@ const Gmap = ({
 				window.google.maps.event.clearListeners(listenerMarker2);
 			}
 		};
-	}, [ref, map]);
+	}, [ref, map, setMap, onMapClick]);
 	return (
 		<div className='map'>
 			<div

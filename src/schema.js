@@ -5,7 +5,7 @@ export class Trip {
     this.description = "";
     this.budget = "";
     this.picture  = [];
-    this.days = [new Date()];
+    this.days = [new Date()];  // Date[]
     this.category = "";
     this.season = "";
   }
@@ -13,14 +13,15 @@ export class Trip {
 
 export class Date {
   constructor(day){
-    this.markers = [];
+    this.markers = []; // Marker[]
     this.time = "";
     this.description = "";
   }
 }
 
-export class Target {
-  constructor(name = "") {
+export class Marker {
+  constructor(marker, name = "") {
+    this.marker = marker;
     this.name = name | "";
     this.description = "";
     this.picture = [];

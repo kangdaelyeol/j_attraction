@@ -3,7 +3,8 @@ import Styles from './create.module.css';
 import Day from './Day';
 import { Wrapper, Status } from '@googlemaps/react-wrapper';
 import Gmap from './Gmap';
-import { Trip, Date } from '../../schema.js';
+import { Trip, Date, Marker } from '../../schema.js';
+import MarkerInfo from './MarkerInfo';
 /** required
  * google Map
  * title
@@ -22,18 +23,17 @@ const Create = () => {
 
 	// for change each day for editing
 	const [dayIndex, setDayIndex] = useState(0);
-	const [markers, setMarkers] = useState([]);
 
 	// value for reducing duplicated code -> to access rapidly
-	const markerst = trip.days[dayIndex]?.markers;
 	const currentDay = trip.days[dayIndex];
+	const markers = currentDay?.markers;
 
 	const addMarker = (marker) => {
-		const newMarkers = [...markerst, marker];
-		currentDay.markers = newMarkers;
-		setTrip((current) => {
-			current[dayIndex].markers = newMarkers;
-			return current;
+		const newMarkers = [...markers, marker];
+		setTrip(() => {
+			const newTrip = { ...trip };
+			newTrip.days[dayIndex].markers = newMarkers;
+			return newTrip;
 		});
 	};
 
@@ -46,12 +46,12 @@ const Create = () => {
 	// To remove currentMarker when you click remove button
 	const onMarkerDelete = (marker) => {
 		// 구글 맵 api를 통한 마커 제거
-		marker.setMap(null);
+		marker.marker.setMap(null);
 		// state상의 marker 제거, 정렬
 		setTrip((current) => {
 			const newMarkers = [];
-			markerst.forEach((m) => {
-				if (marker !== m) newMarkers.push(m);
+			markers.forEach((m) => {
+				if (marker.marker !== m.marker) newMarkers.push(m);
 			});
 			const newTrip = { ...current };
 			newTrip.days[dayIndex].markers = newMarkers;
@@ -145,7 +145,7 @@ const Create = () => {
 				>
 					<Gmap
 						markers={markers}
-						setMarkers={setMarkers}
+						addMarker={addMarker}
 						currentMarker={currentMarker}
 						setCurrentMarker={setCurrentMarker}
 						map={map}
@@ -155,20 +155,11 @@ const Create = () => {
 			</div>
 			<div className={Styles.map__bottom}>
 				<Day info={currentDay} index={dayIndex} />
-				<div className={Styles.target__info}>
-					<input type='text' className='placename' placeholder='지역 이름' />
-					<input type='text' className='address' placeholder='주소' />
-					<textarea
-						placeholder='설명'
-						name='description'
-						id='description'
-						cols='30'
-						rows='10'
-					></textarea>
-					<button onClick={() => onMarkerDelete(currentMarker)}>
-						removecurrnet
-					</button>
-				</div>
+				<MarkerInfo
+					currentMarker={currentMarker}
+					index={markers.indexOf(currentMarker)}
+					onMarkerDelete={onMarkerDelete}
+				/>
 			</div>
 
 			<button className='save'>save!</button>

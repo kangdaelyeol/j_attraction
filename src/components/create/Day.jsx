@@ -2,13 +2,8 @@ import React, {useState} from 'react';
 import Styles from './day.module.css';
 
 
-const Marker = ({info}) => {
-	
-}
-
 
 const Day = ({ info, index }) => {
-	console.log(index)
 	return (
 		<div className='container'>
 			<span>this is day {Number(index) + 1}</span>
