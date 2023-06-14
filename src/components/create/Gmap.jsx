@@ -22,9 +22,7 @@ const InfoViewForMarker = ({ marker }) => {
 };
 
 const Gmap = ({
-	markers,
 	addMarker,
-	currentMarker,
 	setCurrentMarker,
 	map,
 	setMap,
@@ -49,8 +47,6 @@ const Gmap = ({
 		}
 	};
 
-	console.log('currentMarker:', currentMarker, markers.indexOf(currentMarker));
-
 	const onMapClick = useCallback(
 		async (e) => {
 			const lat = e.latLng.lat();
@@ -74,9 +70,12 @@ const Gmap = ({
 				setCurrentMarker(newMarker.id);
 			});
 
+			newMarker.onDelete = () => {
+				newMarker.marker.setMap(null);
+			}
+
 			infoWindow.setContent(renderToString(infoViewContent));
-			marker.label = '123';
-			marker.setMap(map);
+			newMarker.marker.setMap(map);
 
 			addMarker(newMarker);
 			setCurrentMarker(newMarker.id);
@@ -111,8 +110,7 @@ const Gmap = ({
 
 		return () => {
 			if (map) {
-				window.google.maps.event.clearListeners(listenerMarker1);
-				window.google.maps.event.clearListeners(listenerMarker2);
+				window.google.maps.event.clearInstanceListeners(map);
 			}
 		};
 	}, [ref, map, setMap, onMapClick]);

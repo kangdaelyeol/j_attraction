@@ -5,6 +5,7 @@ import { Wrapper, Status } from '@googlemaps/react-wrapper';
 import Gmap from './Gmap';
 import { Trip, DateInfo, Marker } from '../../schema.js';
 import MarkerInfo from './MarkerInfo';
+import { getNewTrip } from '../../factory.js';
 /** required
  * google Map
  * title
@@ -21,81 +22,83 @@ const Create = () => {
 	// for storing in db
 	const [trip, setTrip] = useState(new Trip());
 
-	// for change each day for editing
+	// for change, to access each elements or state with key value
 	const [dayIndex, setDayIndex] = useState(0);
+	const [currentMarker, setCurrentMarker] = useState(null);
 
 	// value for reducing duplicated code -> to access rapidly
 	const currentDay = trip.days[dayIndex];
 	const markers = currentDay?.markers;
 
 	const addMarker = (marker) => {
-		const newMarkers = [...markers, marker];
-		setTrip(() => {
-			const newTrip = { ...trip };
-			newTrip.days[dayIndex].markers = newMarkers;
-			return newTrip;
+		const newMarkers = [];
+		markers.forEach((v) => {
+			newMarkers.push({ ...v });
 		});
+		console.log("ADDMARKER")
+		newMarkers.push({ ...marker });
+		const newTrip = getNewTrip(trip);
+		newTrip.days[dayIndex].markers = newMarkers;
+		setTrip(newTrip);
 	};
 
-	// for editing marker info
-	const [currentMarker, setCurrentMarker] = useState(null);
 
-	const markerNow = markers.find(v => {
+	// for editing marker info
+	console.log('current Marker: ', currentMarker);
+
+	const markerNow = markers.find((v) => {
 		return v.id === currentMarker;
-	})
+	});
 	// for Google map API
 	const [map, setMap] = useState();
 
 	// To remove currentMarker when you click remove button
 	const onMarkerDelete = (markerId) => {
 		// 구글 맵 api를 통한 마커 제거
-		const DeleteMarker = markers.find(v => {
-			console.log(v.id, markerId);
-			return v.id === markerId;
+		markers.forEach((v) => {
+			if (markerId === v.id) {
+					v.onDelete();
+			}
 		});
-		console.log("DeleteMarker:", DeleteMarker)
-		DeleteMarker.marker.setMap(null);
-		console.log(markerNow.marker);
 		// state상의 marker 제거, 정렬
-		setTrip((current) => {
-			const newMarkers = [];
-			markers.forEach((m) => {
-				if (markerId !== m.id) newMarkers.push(m);
-			});
-			const newTrip = { ...current };
-			newTrip.days[dayIndex].markers = newMarkers;
-			return newTrip;
+		const newMarkers = [];
+		markers.forEach((m) => {
+			if (markerId !== m.id) newMarkers.push({ ...m });
 		});
+		const newTrip = getNewTrip(trip);
+		newTrip.days[dayIndex].markers = newMarkers;
+		setTrip(newTrip);
 	};
 
 	const imgChange = (src, index, markerIndex) => {
-		const newCurrentMarker = {...currentMarker};
+		const newCurrentMarker = { ...currentMarker };
 		newCurrentMarker.picture[index] = src;
-		setTrip((current) => {
-			const newTrip = {...current};
-			newTrip.days[dayIndex].markers[markerIndex] = newCurrentMarker;
-			return newTrip;
-		})
-	}
+		const newTrip = getNewTrip(trip);
+		newTrip.days[dayIndex].markers[markerIndex] = newCurrentMarker;
+		setTrip(newTrip);
+	};
 
 	const infoChange = (val, markerId) => {
-		const newMarker = {...markerNow, ...val};
+		const newMarker = { ...markerNow, ...val };
 		console.log(newMarker);
 		const newMarkers = [];
-		markers.forEach(v => {
-			if(v.id !== markerId) newMarkers.push(v);
+		markers.forEach((v) => {
+			if (v.id !== markerId) newMarkers.push(v);
 			else newMarkers.push(newMarker);
 		});
 
 		console.log(newMarkers);
-		setTrip((current) => {
-			const newTrip = {...current};
-			newTrip.days[dayIndex].markers = newMarkers;
-			return newTrip;
-		})
-	}
+		const newTrip = getNewTrip(trip);
+		newTrip.days[dayIndex].markers = newMarkers;
+		setTrip(newTrip);
+	};
 
-	const onDayClick = (index) => {
+	const onDayClick = (index, map) => {
+
+		// 기존 marker->지우기
+		
+		// 바뀔 day의 marker그리기
+
 		return setDayIndex(index);
 	};
 
@@ -123,7 +126,6 @@ const Create = () => {
 			return newTrip;
 		});
 	};
-	console.log("currentMarker(ID)", currentMarker)
 	return (
 		<div className={Styles.container}>
 			<div className='title'>Create</div>
@@ -191,14 +193,15 @@ const Create = () => {
 			</div>
 			<div className={Styles.map__bottom}>
 				<Day info={currentDay} index={dayIndex} />
-				{markerNow && <MarkerInfo
-					currentMarker={markerNow}
-					markerId={currentMarker}
-					onMarkerDelete={onMarkerDelete}
-					imgChange={imgChange}
-					infoChange={infoChange}
-				/> }
-				
+				{markerNow && (
+					<MarkerInfo
+						currentMarker={markerNow}
+						markerId={currentMarker}
+						onMarkerDelete={onMarkerDelete}
+						imgChange={imgChange}
+						infoChange={infoChange}
+					/>
+				)}
 			</div>
 
 			<button className='save'>save!</button>
