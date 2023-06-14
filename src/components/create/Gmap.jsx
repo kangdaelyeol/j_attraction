@@ -62,7 +62,7 @@ const Gmap = ({
 				title: placename,
 			});
 
-			const newMarker = new Marker(marker, marker.title);
+			const newMarker = new Marker(marker);
 
 			const infoViewContent = <InfoViewForMarker marker={marker} />;
 			const infoWindow = new window.google.maps.InfoWindow({
@@ -71,7 +71,7 @@ const Gmap = ({
 
 			newMarker.marker.addListener('click', (e) => {
 				infoWindow.open(map, marker);
-				setCurrentMarker(newMarker);
+				setCurrentMarker(newMarker.id);
 			});
 
 			infoWindow.setContent(renderToString(infoViewContent));
@@ -79,7 +79,7 @@ const Gmap = ({
 			marker.setMap(map);
 
 			addMarker(newMarker);
-			setCurrentMarker(newMarker);
+			setCurrentMarker(newMarker.id);
 		},
 		[addMarker, map, setCurrentMarker]
 	);

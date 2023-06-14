@@ -3,7 +3,7 @@ import Styles from './create.module.css';
 import Day from './Day';
 import { Wrapper, Status } from '@googlemaps/react-wrapper';
 import Gmap from './Gmap';
-import { Trip, Date, Marker } from '../../schema.js';
+import { Trip, DateInfo, Marker } from '../../schema.js';
 import MarkerInfo from './MarkerInfo';
 /** required
  * google Map
@@ -40,18 +40,27 @@ const Create = () => {
 	// for editing marker info
 	const [currentMarker, setCurrentMarker] = useState(null);
 
+	const markerNow = markers.find(v => {
+		return v.id === currentMarker;
+	})
 	// for Google map API
 	const [map, setMap] = useState();
 
 	// To remove currentMarker when you click remove button
-	const onMarkerDelete = (marker) => {
+	const onMarkerDelete = (markerId) => {
 		// 구글 맵 api를 통한 마커 제거
-		marker.marker.setMap(null);
+		const DeleteMarker = markers.find(v => {
+			console.log(v.id, markerId);
+			return v.id === markerId;
+		});
+		console.log("DeleteMarker:", DeleteMarker)
+		DeleteMarker.marker.setMap(null);
+		console.log(markerNow.marker);
 		// state상의 marker 제거, 정렬
 		setTrip((current) => {
 			const newMarkers = [];
 			markers.forEach((m) => {
-				if (marker.marker !== m.marker) newMarkers.push(m);
+				if (markerId !== m.id) newMarkers.push(m);
 			});
 			const newTrip = { ...current };
 			newTrip.days[dayIndex].markers = newMarkers;
@@ -67,7 +76,23 @@ const Create = () => {
 			newTrip.days[dayIndex].markers[markerIndex] = newCurrentMarker;
 			return newTrip;
 		})
-		setCurrentMarker(newCurrentMarker);
+	}
+
+	const infoChange = (val, markerId) => {
+		const newMarker = {...markerNow, ...val};
+		console.log(newMarker);
+		const newMarkers = [];
+		markers.forEach(v => {
+			if(v.id !== markerId) newMarkers.push(v);
+			else newMarkers.push(newMarker);
+		});
+
+		console.log(newMarkers);
+		setTrip((current) => {
+			const newTrip = {...current};
+			newTrip.days[dayIndex].markers = newMarkers;
+			return newTrip;
+		})
 	}
 
 	const onDayClick = (index) => {
@@ -76,7 +101,7 @@ const Create = () => {
 
 	const onAddDayClick = () => {
 		// create new Day;
-		const newDay = new Date();
+		const newDay = new DateInfo();
 		// setTrip => add push new day into days;
 		return setTrip((current) => {
 			const newTrip = { ...current };
@@ -90,7 +115,7 @@ const Create = () => {
 		trip.days.forEach((v, index) => {
 			if (Number(rmIndex) !== index) newDays.push({ ...v });
 		});
-		if (newDays.length === 0) newDays.push(new Date());
+		if (newDays.length === 0) newDays.push(new DateInfo());
 
 		return setTrip((current) => {
 			const newTrip = { ...current };
@@ -98,7 +123,7 @@ const Create = () => {
 			return newTrip;
 		});
 	};
-
+	console.log("currentMarker(ID)", currentMarker)
 	return (
 		<div className={Styles.container}>
 			<div className='title'>Create</div>
@@ -166,12 +191,14 @@ const Create = () => {
 			</div>
 			<div className={Styles.map__bottom}>
 				<Day info={currentDay} index={dayIndex} />
-				<MarkerInfo
-					currentMarker={currentMarker}
-					markerIndex={markers.indexOf(currentMarker)}
+				{markerNow && <MarkerInfo
+					currentMarker={markerNow}
+					markerId={currentMarker}
 					onMarkerDelete={onMarkerDelete}
 					imgChange={imgChange}
-				/>
+					infoChange={infoChange}
+				/> }
+				
 			</div>
 
 			<button className='save'>save!</button>

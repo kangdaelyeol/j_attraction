@@ -5,13 +5,13 @@ export class Trip {
     this.description = "";
     this.budget = "";
     this.picture  = [];
-    this.days = [new Date()];  // Date[]
+    this.days = [new DateInfo()];  // Date[]
     this.category = "";
     this.season = "";
   }
 }
 
-export class Date {
+export class DateInfo {
   constructor(day){
     this.markers = []; // Marker[]
     this.time = "";
@@ -20,9 +20,10 @@ export class Date {
 }
 
 export class Marker {
-  constructor(marker, name = "") {
+  constructor(marker) {
+    this.id = Date.now();
     this.marker = marker;
-    this.name = name | "";
+    this.name = marker.title;
     this.description = "";
     this.picture = [];
     this.time = "";

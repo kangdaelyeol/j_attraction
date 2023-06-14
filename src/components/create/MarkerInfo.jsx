@@ -1,35 +1,40 @@
 import React, { useRef, useState } from 'react';
 import Styles from './day.module.css';
 
-const ImgDes = ({imgsrc, index, onChangeFile}) => {
-  const inputRef = useRef();
+const ImgDes = ({ imgsrc, index, onChangeFile }) => {
+	const inputRef = useRef();
 
-  const onBtnClick = (e) => {
-    e.preventDefault();
-    inputRef.current.click();
-  }
+	const onBtnClick = (e) => {
+		e.preventDefault();
+		inputRef.current.click();
+	};
 
-  const onFileInput = async () => {
-    const files = inputRef.current.files;
-    await onChangeFile(files, index);
-  }
+	const onFileInput = async () => {
+		const files = inputRef.current.files;
+		await onChangeFile(files, index);
+	};
 
-  return (
-    <div className={Styles.img__des} onClick={onBtnClick}>
-      <img className={Styles.img__place} src={imgsrc} alt='desimg' />
-      <input type="file" accept='image/*' ref={inputRef} onChange={onFileInput} />
-    </div>
-  )
-}
+	return (
+		<div className={Styles.img__des} onClick={onBtnClick}>
+			<img className={Styles.img__place} src={imgsrc} alt='desimg' />
+			<input
+				type='file'
+				accept='image/*'
+				ref={inputRef}
+				onChange={onFileInput}
+			/>
+		</div>
+	);
+};
 
 const Imginput = ({ currentMarker, loading, setLoading, setPictureSrc }) => {
-  const onChangeFile = async (files, index) => {
-    setLoading(index);
-    // TO DO: await -> fileInput / get src
+	const onChangeFile = async (files, index) => {
+		setLoading(index);
+		// TO DO: await -> fileInput / get src
 
-    // set picture Src -> setPictureSrc(src, index)
-    setLoading(false);
-  }
+		// set picture Src -> setPictureSrc(src, index)
+		setLoading(false);
+	};
 	return (
 		<div className={Styles.img__container}>
 			{currentMarker.picture.map((v, index) => {
@@ -38,17 +43,23 @@ const Imginput = ({ currentMarker, loading, setLoading, setPictureSrc }) => {
 						{loading === index ? (
 							<div className={Styles.loading}> </div>
 						) : (
-							<ImgDes imgsrc={v} onChangeFile={onChangeFile}/>
+							<ImgDes imgsrc={v} onChangeFile={onChangeFile} />
 						)}
 					</div>
 				);
 			})}
-      <div className="img__input"></div>
+			<div className='img__input'></div>
 		</div>
 	);
 };
 
-const MarkerInfo = ({ currentMarker, markerIndex, onMarkerDelete, imgChange}) => {
+const MarkerInfo = ({
+	currentMarker,
+	markerId,
+	onMarkerDelete,
+	imgChange,
+  infoChange
+}) => {
 	const [loading, setLoading] = useState(false);
 	const onMarkerInput = () => {};
 
@@ -58,9 +69,24 @@ const MarkerInfo = ({ currentMarker, markerIndex, onMarkerDelete, imgChange}) =>
 	const costRef = useRef();
 	const descriptionRef = useRef();
 
-  const setPictureSrc = (src, index) => {
-    imgChange(src, index, markerIndex);
-  }
+	const onInfoInput = () => {
+		const placeVal = placeRef.current.value;
+		const timeVal = timeRef.current.value;
+		const costVal = costRef.current.value;
+		const descriptionVal = descriptionRef.current.value;
+		infoChange({
+			name: placeVal,
+			time: timeVal,
+			cost: costVal,
+			description: descriptionVal,
+		}, markerId);
+	};
+
+	const setPictureSrc = (src, index) => {
+		imgChange(src, index, markerId);
+	};
+  console.log(currentMarker);
+
 	return (
 		<div className={Styles.target__info}>
 			<input
@@ -69,6 +95,7 @@ const MarkerInfo = ({ currentMarker, markerIndex, onMarkerDelete, imgChange}) =>
 				placeholder='지역 이름'
 				ref={placeRef}
 				value={currentMarker?.name || ''}
+        onInput={onInfoInput}
 			/>
 			<input
 				type='text'
@@ -76,6 +103,7 @@ const MarkerInfo = ({ currentMarker, markerIndex, onMarkerDelete, imgChange}) =>
 				placeholder='시간'
 				ref={timeRef}
 				value={currentMarker?.time || ''}
+        onInput={onInfoInput}
 			/>
 			<input
 				type='text'
@@ -83,6 +111,7 @@ const MarkerInfo = ({ currentMarker, markerIndex, onMarkerDelete, imgChange}) =>
 				placeholder='비용'
 				ref={costRef}
 				value={currentMarker?.cost || ''}
+        onInput={onInfoInput}
 			/>
 			<textarea
 				placeholder='설명'
@@ -92,9 +121,10 @@ const MarkerInfo = ({ currentMarker, markerIndex, onMarkerDelete, imgChange}) =>
 				rows='10'
 				ref={descriptionRef}
 				value={currentMarker?.description || ''}
+        onInput={onInfoInput}
 			></textarea>
 			<Imginput currentMarker={currentMarker} />
-			<button onClick={() => onMarkerDelete(currentMarker)}>
+			<button onClick={() => onMarkerDelete(markerId)}>
 				removecurrnet
 			</button>
 		</div>
