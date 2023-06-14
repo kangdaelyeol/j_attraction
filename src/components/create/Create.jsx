@@ -59,6 +59,17 @@ const Create = () => {
 		});
 	};
 
+	const imgChange = (src, index, markerIndex) => {
+		const newCurrentMarker = {...currentMarker};
+		newCurrentMarker.picture[index] = src;
+		setTrip((current) => {
+			const newTrip = {...current};
+			newTrip.days[dayIndex].markers[markerIndex] = newCurrentMarker;
+			return newTrip;
+		})
+		setCurrentMarker(newCurrentMarker);
+	}
+
 	const onDayClick = (index) => {
 		return setDayIndex(index);
 	};
@@ -157,8 +168,9 @@ const Create = () => {
 				<Day info={currentDay} index={dayIndex} />
 				<MarkerInfo
 					currentMarker={currentMarker}
-					index={markers.indexOf(currentMarker)}
+					markerIndex={markers.indexOf(currentMarker)}
 					onMarkerDelete={onMarkerDelete}
+					imgChange={imgChange}
 				/>
 			</div>
 

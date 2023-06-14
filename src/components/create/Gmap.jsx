@@ -79,6 +79,7 @@ const Gmap = ({
 			marker.setMap(map);
 
 			addMarker(newMarker);
+			setCurrentMarker(newMarker);
 		},
 		[addMarker, map, setCurrentMarker]
 	);
