@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import Styles from './day.module.css';
+import Styles from './markerinfo.module.css';
 
 const ImgDes = ({ imgsrc, index, onChangeFile }) => {
 	const inputRef = useRef();
@@ -48,7 +48,7 @@ const Imginput = ({ currentMarker, loading, setLoading, setPictureSrc }) => {
 					</div>
 				);
 			})}
-			<div className='img__input'></div>
+			<div className={Styles.img__input}></div>
 		</div>
 	);
 };
@@ -58,7 +58,7 @@ const MarkerInfo = ({
 	markerId,
 	onMarkerDelete,
 	imgChange,
-  infoChange
+	infoChange,
 }) => {
 	const [loading, setLoading] = useState(false);
 	const onMarkerInput = () => {};
@@ -74,44 +74,47 @@ const MarkerInfo = ({
 		const timeVal = timeRef.current.value;
 		const costVal = costRef.current.value;
 		const descriptionVal = descriptionRef.current.value;
-		infoChange({
-			name: placeVal,
-			time: timeVal,
-			cost: costVal,
-			description: descriptionVal,
-		}, markerId);
+		infoChange(
+			{
+				name: placeVal,
+				time: timeVal,
+				cost: costVal,
+				description: descriptionVal,
+			},
+			markerId
+		);
 	};
 
 	const setPictureSrc = (src, index) => {
 		imgChange(src, index, markerId);
 	};
-  console.log(currentMarker);
+	console.log(currentMarker);
 
 	return (
 		<div className={Styles.target__info}>
 			<input
 				type='text'
-				className='placename'
+				className={Styles.placename}
 				placeholder='지역 이름'
 				ref={placeRef}
 				value={currentMarker?.name || ''}
-        onInput={onInfoInput}
+				onInput={onInfoInput}
 			/>
 			<input
 				type='text'
-				className='time'
+				className={Styles.time}
 				placeholder='시간'
 				ref={timeRef}
 				value={currentMarker?.time || ''}
-        onInput={onInfoInput}
+				onInput={onInfoInput}
 			/>
 			<input
 				type='text'
-				className='cost'
+				className={Styles.cost}
 				placeholder='비용'
 				ref={costRef}
 				value={currentMarker?.cost || ''}
-        onInput={onInfoInput}
+				onInput={onInfoInput}
 			/>
 			<textarea
 				placeholder='설명'
@@ -121,10 +124,13 @@ const MarkerInfo = ({
 				rows='10'
 				ref={descriptionRef}
 				value={currentMarker?.description || ''}
-        onInput={onInfoInput}
+				onInput={onInfoInput}
 			></textarea>
 			<Imginput currentMarker={currentMarker} />
-			<button onClick={() => onMarkerDelete(markerId)}>
+			<button
+				className={Styles.delete__btn}
+				onClick={() => onMarkerDelete(markerId)}
+			>
 				removecurrnet
 			</button>
 		</div>

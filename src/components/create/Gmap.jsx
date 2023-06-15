@@ -73,7 +73,9 @@ const Gmap = ({
 			newMarker.onDelete = () => {
 				newMarker.marker.setMap(null);
 			}
-
+			newMarker.onAppear =() => {
+				newMarker.marker.setMap(map);
+			}
 			infoWindow.setContent(renderToString(infoViewContent));
 			newMarker.marker.setMap(map);
 

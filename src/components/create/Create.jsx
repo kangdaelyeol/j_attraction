@@ -25,28 +25,47 @@ const Create = () => {
 	// for change, to access each elements or state with key value
 	const [dayIndex, setDayIndex] = useState(0);
 	const [currentMarker, setCurrentMarker] = useState(null);
+	const [path, setPath] = useState(null);
 
 	// value for reducing duplicated code -> to access rapidly
 	const currentDay = trip.days[dayIndex];
 	const markers = currentDay?.markers;
 
 	const addMarker = (marker) => {
+		//기존 path 지우기
+		if (path) path.setMap(null);
 		const newMarkers = [];
-		markers.forEach((v) => {
+		markers?.forEach((v) => {
 			newMarkers.push({ ...v });
 		});
-		console.log("ADDMARKER")
+		console.log('ADDMARKER');
 		newMarkers.push({ ...marker });
 		const newTrip = getNewTrip(trip);
 		newTrip.days[dayIndex].markers = newMarkers;
-		setTrip(newTrip);
-	};
 
+		// 새로운 path 생성
+		const pathCoordinates = [];
+		newMarkers.forEach((m) => {
+			pathCoordinates.push(m.marker.getPosition());
+		});
+
+		const newPath = new window.google.maps.Polyline({
+			path: pathCoordinates,
+			geodesic: true,
+			strokeColor: '#FF0000',
+			strokeOpacity: 0.2,
+			strokeWeight: 6,
+		});
+
+		newPath.setMap(map);
+		setPath(newPath);
+		return setTrip(newTrip);
+	};
 
 	// for editing marker info
 	console.log('current Marker: ', currentMarker);
 
-	const markerNow = markers.find((v) => {
+	const markerNow = markers?.find((v) => {
 		return v.id === currentMarker;
 	});
 	// for Google map API
@@ -54,10 +73,14 @@ const Create = () => {
 
 	// To remove currentMarker when you click remove button
 	const onMarkerDelete = (markerId) => {
+		//기존 path 지우기
+		if (path) {
+			path.setMap(null);
+		}
 		// 구글 맵 api를 통한 마커 제거
 		markers.forEach((v) => {
 			if (markerId === v.id) {
-					v.onDelete();
+				v.onDelete();
 			}
 		});
 		// state상의 marker 제거, 정렬
@@ -65,9 +88,26 @@ const Create = () => {
 		markers.forEach((m) => {
 			if (markerId !== m.id) newMarkers.push({ ...m });
 		});
+		// 새로운 path 생성
+		const pathCoordinates = [];
+		newMarkers.forEach((m) => {
+			pathCoordinates.push(m.marker.getPosition());
+		});
+
+		const newPath = new window.google.maps.Polyline({
+			path: pathCoordinates,
+			geodesic: true,
+			strokeColor: '#FF0000',
+			strokeOpacity: 0.2,
+			strokeWeight: 6,
+		});
+
+		newPath.setMap(map);
+
 		const newTrip = getNewTrip(trip);
 		newTrip.days[dayIndex].markers = newMarkers;
-		setTrip(newTrip);
+		setPath(newPath);
+		return setTrip(newTrip);
 	};
 
 	const imgChange = (src, index, markerIndex) => {
@@ -86,19 +126,39 @@ const Create = () => {
 			if (v.id !== markerId) newMarkers.push(v);
 			else newMarkers.push(newMarker);
 		});
-
-		console.log(newMarkers);
 		const newTrip = getNewTrip(trip);
 		newTrip.days[dayIndex].markers = newMarkers;
 		setTrip(newTrip);
 	};
 
-	const onDayClick = (index, map) => {
+	const onDayClick = (index) => {
+		const changeDayMarkers = trip.days[index].markers;
+		// 기존 marker, path지우기
+		if (path) {
+			path.setMap(null);
+		}
+		markers.forEach((m) => {
+			m.onDelete();
+		});
+		let bounds = new window.google.maps.LatLngBounds();
+		let pathCoordinates = [];
+		changeDayMarkers.forEach((m) => {
+			m.onAppear();
+			bounds.extend(m.marker.getPosition());
+			pathCoordinates.push(m.marker.getPosition());
+		});
 
-		// 기존 marker->지우기
-		
-		// 바뀔 day의 marker그리기
+		// draw path
+		const newPath = new window.google.maps.Polyline({
+			path: pathCoordinates,
+			geodesic: true,
+			strokeColor: '#FF0000',
+			strokeOpacity: 0.2,
+			strokeWeight: 6,
+		});
 
+		newPath.setMap(map);
+		setPath(newPath);
 		return setDayIndex(index);
 	};
 
@@ -106,31 +166,33 @@ const Create = () => {
 		// create new Day;
 		const newDay = new DateInfo();
 		// setTrip => add push new day into days;
-		return setTrip((current) => {
-			const newTrip = { ...current };
-			newTrip.days.push(newDay);
-			return newTrip;
-		});
+		const newTrip = getNewTrip(trip);
+		newTrip.days.push(newDay);
+
+		return setTrip(newTrip);
 	};
 
 	const onRemoveDayClick = (rmIndex) => {
+		if (rmIndex === 0) return;
+		if (path) path.setMap(null);
+		markers.forEach((m) => {
+			m.marker.setMap(null);
+		});
 		const newDays = [];
 		trip.days.forEach((v, index) => {
 			if (Number(rmIndex) !== index) newDays.push({ ...v });
 		});
 		if (newDays.length === 0) newDays.push(new DateInfo());
-
-		return setTrip((current) => {
-			const newTrip = { ...current };
-			newTrip.days = newDays;
-			return newTrip;
-		});
+		const newTrip = getNewTrip(trip);
+		newTrip.days = newDays;
+		onDayClick(0);
+		return setTrip(newTrip);
 	};
 	return (
 		<div className={Styles.container}>
-			<div className='title'>Create</div>
+			<div className={Styles.title}>Create</div>
 			<input type='text' placeholder='Title' />
-			<div className='summary'>
+			<div className={Styles.summary}>
 				<select name='season' id='season'>
 					<option value=''>계절</option>
 					<option value='spring'>봄</option>
@@ -148,12 +210,12 @@ const Create = () => {
 				rows='10'
 				placeholder='간단한 여행 소개'
 			></textarea>
-			<div className='daybox'>
+			<div className={Styles.daybox}>
 				{trip.days.map((v, index) => {
 					return (
-						<div key={index} className='day'>
+						<div key={index} className={Styles.day}>
 							<div
-								className='dayset'
+								className={Styles.day__btn}
 								data-index={index}
 								onClick={() => {
 									onDayClick(index);
@@ -204,7 +266,7 @@ const Create = () => {
 				)}
 			</div>
 
-			<button className='save'>save!</button>
+			<button className={Styles.save__btn}>save!</button>
 		</div>
 	);
 };
