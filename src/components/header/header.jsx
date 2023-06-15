@@ -10,10 +10,10 @@ const Header = () => {
   }
   return (
     <div className={Styles.container}>
-      <div className="left">logo</div>
-      <div onClick={onTitleClick} className="title">Title</div>
+      <div className={Styles.logo}>logo</div>
+      <div onClick={onTitleClick} className={Styles.title}>JAT</div>
       <div className="right">
-        <div className="login__btn">Sign out</div>
+        <div className={Styles.login}>Sign out</div>
       </div>
     </div>
   )

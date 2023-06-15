@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import Styles from './create.module.css';
 import Day from './Day';
-import { Wrapper, Status } from '@googlemaps/react-wrapper';
+import { Wrapper} from '@googlemaps/react-wrapper';
 import Gmap from './Gmap';
-import { Trip, DateInfo, Marker } from '../../schema.js';
+import { Trip, DateInfo } from '../../schema.js';
 import MarkerInfo from './MarkerInfo';
 import { getNewTrip } from '../../factory.js';
 /** required
@@ -191,8 +191,12 @@ const Create = () => {
 	return (
 		<div className={Styles.container}>
 			<div className={Styles.title}>Create</div>
-			<input type='text' placeholder='Title' />
+			<div className={Styles.title__input}>
+				<span>제목: </span>
+				<input type='text' placeholder='Title' />
+			</div>
 			<div className={Styles.summary}>
+				<span>정보: </span>
 				<select name='season' id='season'>
 					<option value=''>계절</option>
 					<option value='spring'>봄</option>
@@ -206,8 +210,9 @@ const Create = () => {
 			<textarea
 				name='introduction'
 				id='introduction'
+				className={Styles.introduction}
 				cols='30'
-				rows='10'
+				rows='4'
 				placeholder='간단한 여행 소개'
 			></textarea>
 			<div className={Styles.daybox}>
@@ -215,27 +220,30 @@ const Create = () => {
 					return (
 						<div key={index} className={Styles.day}>
 							<div
-								className={Styles.day__btn}
+								className={`${Styles.day__btn} ${dayIndex === index ? Styles.day__focus : ""}`}
 								data-index={index}
 								onClick={() => {
 									onDayClick(index);
 								}}
 							>
-								day{index + 1}
+								<span>Day {index + 1}</span>
 							</div>
 							<button
 								onClick={(e) => {
 									onRemoveDayClick(index);
 								}}
 							>
-								remove day {index + 1}
+								<span>remove day {index + 1}</span>
 							</button>
 						</div>
 					);
 				})}
-				<div onClick={onAddDayClick} className={Styles.add_day}>
+				<div onClick={onAddDayClick} className={Styles.day}>
 					addDay
 				</div>
+			</div>
+			<div className={Styles.map__bottom}>
+				<Day info={currentDay} index={dayIndex} markers={markers} currnetMarker={currentMarker} setCurrentMarker={setCurrentMarker}/>
 			</div>
 			<div className={Styles.map__top}>
 				<Wrapper
@@ -252,19 +260,19 @@ const Create = () => {
 						setMap={setMap}
 					/>
 				</Wrapper>
+				<div className='marker__info'>
+					{markerNow && (
+						<MarkerInfo
+							currentMarker={markerNow}
+							markerId={currentMarker}
+							onMarkerDelete={onMarkerDelete}
+							imgChange={imgChange}
+							infoChange={infoChange}
+						/>
+					)}
+				</div>
 			</div>
-			<div className={Styles.map__bottom}>
-				<Day info={currentDay} index={dayIndex} />
-				{markerNow && (
-					<MarkerInfo
-						currentMarker={markerNow}
-						markerId={currentMarker}
-						onMarkerDelete={onMarkerDelete}
-						imgChange={imgChange}
-						infoChange={infoChange}
-					/>
-				)}
-			</div>
+			
 
 			<button className={Styles.save__btn}>save!</button>
 		</div>

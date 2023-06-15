@@ -16,7 +16,7 @@ function getDetailsPromise(service, request) {
 const InfoViewForMarker = ({ marker }) => {
 	return (
 		<div className='info__view'>
-			<div className='h3'>{marker.getTitle()} 123412</div>
+			<div className='h3'>{marker.getTitle()}</div>
 		</div>
 	);
 };
@@ -61,9 +61,7 @@ const Gmap = ({
 			const newMarker = new Marker(marker);
 
 			const infoViewContent = <InfoViewForMarker marker={marker} />;
-			const infoWindow = new window.google.maps.InfoWindow({
-				content: '<h1>dPdkf</h1>',
-			});
+			const infoWindow = new window.google.maps.InfoWindow();
 
 			newMarker.marker.addListener('click', (e) => {
 				infoWindow.open(map, marker);
@@ -94,7 +92,7 @@ const Gmap = ({
 			setMap(
 				new window.google.maps.Map(ref.current, {
 					center: { lat: 37.569227, lng: 126.9777256 },
-					zoom: 16,
+					zoom: 14,
 					mapTypeControl: true,
 					mapTypeControlOptions: {
 						style: window.google.maps.MapTypeControlStyle.DROPDOWN_MENU,
@@ -122,7 +120,7 @@ const Gmap = ({
 				ref={ref}
 				style={{
 					height: '400px',
-					width: '800px',
+					width: '600px',
 				}}
 			></div>
 		</div>

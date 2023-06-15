@@ -1,9 +1,12 @@
 .container{
-  background-color: orange;
+  background-color: #004f9f;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 60px;
+  color: white;
+  font-weight: bold;
+  font-size: 1.5em;
 }
 
 .container div{
