@@ -131,7 +131,7 @@ const MarkerInfo = ({
 				className={Styles.delete__btn}
 				onClick={() => onMarkerDelete(markerId)}
 			>
-				removecurrnet
+				Remove
 			</button>
 		</div>
 	);

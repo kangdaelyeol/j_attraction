@@ -1,17 +1,20 @@
 /* day.module.css */
-
+* {
+  transition: .2s
+}
 .container {
 	display: flex;
-	flex-direction: column;
-	align-items: flex-start; /* Align items to the left */
+	align-items: center; /* Align items to the left */
 	padding: 20px 0px;
 	box-sizing: border-box;
 }
 
 .title {
-  font-size: 2.5em;
+  font-size: 2em;
   font-weight: bold;
-  color: #1f5f9f
+  color: #1f5f9f;
+  flex-shrink: 0;
+  margin-right: 10px;
 }
 
 .markers {
@@ -22,18 +25,21 @@
 
 .route__box {
 	display: flex;
-	flex-direction: row;
+	/* flex-direction: row; */
 	align-items: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
 	width: 100%;
   max-width: 800px;
+  overflow-x: auto;
+  overflow-y: hidden;
 	height: 50px;  /* Set a fixed height */
-	min-height: 50px;
-	overflow-x: auto; /* Scroll horizontally if content overflows */
-	overflow-y: hidden;
-	margin-bottom: 20px;
+	min-height: 50px;/* Scroll horizontally if content overflows */
+  flex-shrink: 0;
 }
 
 .route {
+  flex-shrink: 0;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
@@ -50,16 +56,18 @@
   border-radius: 20px;
 	cursor: pointer;
   font-weight: bold;
-  color:#727374;
+  color:#123456;
   flex-shrink: 0;
 }
 
 .route__focus {
-  background-color: #1f5f9f;
+  background-color: #2e7ecf;
+  color: #ffffff;
 }
 .next {
 	margin: 0 5px;
   font-weight: bold;
-  font-size: 20px
+  font-size: 20px;
+  flex-shrink: 0;
 }
 

@@ -64,7 +64,7 @@ const Gmap = ({
 			const infoWindow = new window.google.maps.InfoWindow();
 
 			newMarker.marker.addListener('click', (e) => {
-				infoWindow.open(map, marker);
+				// infoWindow.open(map, marker);
 				setCurrentMarker(newMarker.id);
 			});
 

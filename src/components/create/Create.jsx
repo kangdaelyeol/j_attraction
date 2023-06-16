@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Styles from './create.module.css';
 import Day from './Day';
-import { Wrapper} from '@googlemaps/react-wrapper';
+import { Wrapper } from '@googlemaps/react-wrapper';
 import Gmap from './Gmap';
 import { Trip, DateInfo } from '../../schema.js';
 import MarkerInfo from './MarkerInfo';
 import { getNewTrip } from '../../factory.js';
+import { cloudinaryService } from '../../service.js';
 /** required
  * google Map
  * title
@@ -14,6 +15,10 @@ import { getNewTrip } from '../../factory.js';
  * * route (locations of places)
  * * place (spendingTime, price, des), moving(way, spendingtime, tips), pictures[]
  */
+
+const cloudinary = new cloudinaryService();
+
+//for GoogleMap
 const render = (status) => {
 	return <h1>{status}</h1>;
 };
@@ -26,10 +31,12 @@ const Create = () => {
 	const [dayIndex, setDayIndex] = useState(0);
 	const [currentMarker, setCurrentMarker] = useState(null);
 	const [path, setPath] = useState(null);
-
+	const [pictures, setPicture] = useState([]);
+	const [currentPicture, setCurrentPicture] = useState(null);
 	// value for reducing duplicated code -> to access rapidly
 	const currentDay = trip.days[dayIndex];
 	const markers = currentDay?.markers;
+	const fileRef = useRef();
 
 	const addMarker = (marker) => {
 		//기존 path 지우기
@@ -88,6 +95,7 @@ const Create = () => {
 		markers.forEach((m) => {
 			if (markerId !== m.id) newMarkers.push({ ...m });
 		});
+
 		// 새로운 path 생성
 		const pathCoordinates = [];
 		newMarkers.forEach((m) => {
@@ -188,6 +196,51 @@ const Create = () => {
 		onDayClick(0);
 		return setTrip(newTrip);
 	};
+
+	// ************* for File Input *********************
+	const onUploadClick = (e, ind) => {
+		// e.preventDefault();
+		fileRef.current.click({ ind });
+	};
+
+	const onFileInput = async () => {
+		const files = fileRef.current.files;
+		const imgIndex = pictures.length;
+		setPicture((current) => {
+			const newPictures = [...current];
+			newPictures.push('loading');
+			return newPictures;
+		});
+
+		// 클라우드서비스 파일 인풋 await -> url 받아오기
+		try {
+			const fileInfo = await cloudinary.uploadFile(files);
+			const newFileUrl = fileInfo.url;
+
+			// url 셋팅
+			setPicture((current) => {
+				const newPictures = [...current];
+				newPictures[imgIndex] = newFileUrl;
+				return newPictures;
+			});
+		} catch (e) {
+			console.log(e);
+			setPicture((current) => {
+				const newPictures = [...current];
+				newPictures.pop();
+				return newPictures;
+			});
+		}
+	};
+
+	const onPictureClick = (ind) => {
+		setCurrentPicture(ind);
+	};
+
+	const onPictureOver = () => {
+		if (currentPicture !== null) setCurrentPicture(null);
+	};
+
 	return (
 		<div className={Styles.container}>
 			<div className={Styles.title}>Create</div>
@@ -198,7 +251,9 @@ const Create = () => {
 			<div className={Styles.summary}>
 				<span>정보: </span>
 				<select name='season' id='season'>
-					<option value=''>계절</option>
+					<option className={Styles.season__tag} value=''>
+						계절
+					</option>
 					<option value='spring'>봄</option>
 					<option value='summer'>여름</option>
 					<option value='autumn'>가을</option>
@@ -215,12 +270,62 @@ const Create = () => {
 				rows='4'
 				placeholder='간단한 여행 소개'
 			></textarea>
+			<span>사진</span>
+			<div className={Styles.picture__box}>
+				{pictures.map((v, ind) => {
+					return (
+						<div
+							className={Styles.picture}
+							onClick={(e) => {
+								onPictureClick(ind);
+							}}
+							data-index={ind}
+							key={ind}
+						>
+							<div
+								className={`${Styles.picture__img} ${
+									currentPicture === ind ? Styles.img__focus : ''
+								}`}
+							>
+								<button className={Styles.picture__ed}>Edit</button>
+								<button className={Styles.picture__rm}>Remove</button>
+								{v === 'loading' ? (
+									<div className={Styles.loading}></div>
+								) : (
+									<img
+										className={Styles.picture__content}
+										src={v}
+										alt='thumb'
+									/>
+								)}
+							</div>
+						</div>
+					);
+				})}
+				<div
+					className={Styles.picture}
+					onMouseMove={onPictureOver}
+					onClick={onUploadClick}
+				>
+					<div className={Styles.picture__img}> + </div>
+				</div>
+				<input
+					className={Styles.upload}
+					ref={fileRef}
+					type='file'
+					accept='image/*'
+					onInput={onFileInput}
+				/>
+			</div>
+			<span>일정</span>
 			<div className={Styles.daybox}>
 				{trip.days.map((v, index) => {
 					return (
 						<div key={index} className={Styles.day}>
 							<div
-								className={`${Styles.day__btn} ${dayIndex === index ? Styles.day__focus : ""}`}
+								className={`${Styles.day__btn} ${
+									dayIndex === index ? Styles.day__focus : ''
+								}`}
 								data-index={index}
 								onClick={() => {
 									onDayClick(index);
@@ -233,17 +338,23 @@ const Create = () => {
 									onRemoveDayClick(index);
 								}}
 							>
-								<span>remove day {index + 1}</span>
+								<span>Remove day {index + 1}</span>
 							</button>
 						</div>
 					);
 				})}
 				<div onClick={onAddDayClick} className={Styles.day}>
-					addDay
+					Add Day
 				</div>
 			</div>
 			<div className={Styles.map__bottom}>
-				<Day info={currentDay} index={dayIndex} markers={markers} currnetMarker={currentMarker} setCurrentMarker={setCurrentMarker}/>
+				<Day
+					info={currentDay}
+					index={dayIndex}
+					markers={markers}
+					currnetMarker={currentMarker}
+					setCurrentMarker={setCurrentMarker}
+				/>
 			</div>
 			<div className={Styles.map__top}>
 				<Wrapper
@@ -272,7 +383,6 @@ const Create = () => {
 					)}
 				</div>
 			</div>
-			
 
 			<button className={Styles.save__btn}>save!</button>
 		</div>

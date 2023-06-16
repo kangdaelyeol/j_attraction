@@ -7,6 +7,7 @@ const Day = ({ info, index, markers, currnetMarker, setCurrentMarker }) => {
 	};
 	return (
 		<div className={Styles.container}>
+			<span className={Styles.title}>경로 </span>
 			<div className={Styles.route__box}>
 				{markers.map((m, ind) => {
 					return (
@@ -19,7 +20,7 @@ const Day = ({ info, index, markers, currnetMarker, setCurrentMarker }) => {
 							>
 								{m.name}
 							</div>
-							{ind < markers.length - 1 ? <div className={Styles.next}> - </div> : "" }
+							{ind < markers.length - 1 ? <div className={Styles.next}> -{'>'} </div> : "" }
 						</div>
 					);
 				})}
