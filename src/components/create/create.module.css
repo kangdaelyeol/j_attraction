@@ -121,11 +121,15 @@
 }
 .save__btn {
 	padding: 10px 20px;
-	background-color: #007bff;
+	background-color: #91c5f9;
 	color: #fff;
 	border: none;
 	border-radius: 5px;
 	cursor: pointer;
+  transition:.2s;
+}
+.save__btn:hover {
+  background-color: #56a3f0;
 }
 
 input,
@@ -195,6 +199,7 @@ option{
   font-size: 70px;
   color:#a3cdf8;
   margin-right: 10px;
+  overflow: hidden;
 }
 
 .picture__img {
@@ -204,6 +209,7 @@ option{
   display: flex;
   justify-content: center;
   align-items: center;
+  background-image: linear-gradient(314deg, rgb(230,255,250),#a3cdf8);
 }
 button{
   all: unset;
@@ -218,6 +224,7 @@ button{
   position: absolute;
   width: 100%;
   height: 20px;
+  transition:.2s;
 }
 .picture__ed {
   background-color: #b3d2ef;
@@ -269,7 +276,6 @@ button{
 
 .picture__content{
   width: 100%;
-  height: 100%;
 }
 
 @keyframes loadingSpinner{

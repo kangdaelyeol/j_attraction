@@ -205,10 +205,10 @@ const Create = () => {
 
 	const onFileInput = async () => {
 		const files = fileRef.current.files;
-		const imgIndex = pictures.length;
+		const imgIndex = currentPicture || pictures.length;
 		setPicture((current) => {
 			const newPictures = [...current];
-			newPictures.push('loading');
+			newPictures[imgIndex] = "loading";
 			return newPictures;
 		});
 
@@ -227,7 +227,7 @@ const Create = () => {
 			console.log(e);
 			setPicture((current) => {
 				const newPictures = [...current];
-				newPictures.pop();
+				newPictures.splice(imgIndex + 1, 1);
 				return newPictures;
 			});
 		}
@@ -240,6 +240,21 @@ const Create = () => {
 	const onPictureOver = () => {
 		if (currentPicture !== null) setCurrentPicture(null);
 	};
+
+	const onEditPicture =  () => {
+		// index - currentPicture
+		fileRef.current.click();
+	}
+
+	const onRmPicture = () => {
+		const newPicture = [...pictures];
+		newPicture.splice(currentPicture, 1);
+		setPicture(newPicture);
+	}
+
+	const onSaveClick = () => {
+		
+	}
 
 	return (
 		<div className={Styles.container}>
@@ -287,8 +302,8 @@ const Create = () => {
 									currentPicture === ind ? Styles.img__focus : ''
 								}`}
 							>
-								<button className={Styles.picture__ed}>Edit</button>
-								<button className={Styles.picture__rm}>Remove</button>
+								<button className={Styles.picture__ed} onClick={onEditPicture}>Edit</button>
+								<button className={Styles.picture__rm} onClick={onRmPicture}>Remove</button>
 								{v === 'loading' ? (
 									<div className={Styles.loading}></div>
 								) : (
@@ -384,7 +399,7 @@ const Create = () => {
 				</div>
 			</div>
 
-			<button className={Styles.save__btn}>save!</button>
+			<button onClick={onSaveClick} className={Styles.save__btn}>save!</button>
 		</div>
 	);
 };

@@ -30,3 +30,22 @@ export class Marker {
     this.cost = "";
   }
 }
+
+
+
+
+
+// ************* for save in DB
+
+
+export class TripModel {
+  constructor(trip, owner, pictures) {
+    this.trip = trip;
+    this.pictures = pictures
+    this.owner = owner;
+  }
+
+  getModelForDB = () => {
+
+  }
+}
