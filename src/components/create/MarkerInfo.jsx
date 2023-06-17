@@ -1,57 +1,7 @@
 import React, { useRef, useState } from 'react';
 import Styles from './markerinfo.module.css';
+import { cloudinaryService } from '../../service.js';
 
-const ImgDes = ({ imgsrc, index, onChangeFile }) => {
-	const inputRef = useRef();
-
-	const onBtnClick = (e) => {
-		e.preventDefault();
-		inputRef.current.click();
-	};
-
-	const onFileInput = async () => {
-		const files = inputRef.current.files;
-		await onChangeFile(files, index);
-	};
-
-	return (
-		<div className={Styles.img__des} onClick={onBtnClick}>
-			<img className={Styles.img__place} src={imgsrc} alt='desimg' />
-			<input
-				type='file'
-				accept='image/*'
-				ref={inputRef}
-				onChange={onFileInput}
-			/>
-		</div>
-	);
-};
-
-const Imginput = ({ currentMarker, loading, setLoading, setPictureSrc }) => {
-	const onChangeFile = async (files, index) => {
-		setLoading(index);
-		// TO DO: await -> fileInput / get src
-
-		// set picture Src -> setPictureSrc(src, index)
-		setLoading(false);
-	};
-	return (
-		<div className={Styles.img__container}>
-			{currentMarker.picture.map((v, index) => {
-				return (
-					<div className={Styles.img__inputed} data-index={index}>
-						{loading === index ? (
-							<div className={Styles.loading}> </div>
-						) : (
-							<ImgDes imgsrc={v} onChangeFile={onChangeFile} />
-						)}
-					</div>
-				);
-			})}
-			<div className={Styles.img__input}></div>
-		</div>
-	);
-};
 
 const MarkerInfo = ({
 	currentMarker,
@@ -59,15 +9,66 @@ const MarkerInfo = ({
 	onMarkerDelete,
 	imgChange,
 	infoChange,
+  markerPicturesChange
 }) => {
-	const [loading, setLoading] = useState(false);
-	const onMarkerInput = () => {};
-
-	const onPictureInput = () => {};
-	const placeRef = useRef();
+  const cloudinary = new cloudinaryService();
+  const [currentPicture, setCurrentPicture] = useState(null);
+  const placeRef = useRef();
 	const timeRef = useRef();
 	const costRef = useRef();
 	const descriptionRef = useRef();
+  const fileRef = useRef();
+  console.log(currentMarker.picture);
+  const onUploadClick = (e, ind) => {
+		// e.preventDefault();
+		fileRef.current.click({ ind });
+	};
+
+	const onFileInput = async () => {
+		const files = fileRef.current.files;
+		const imgIndex = currentPicture || currentMarker.picture.length;
+    const newPictures = [...currentMarker.picture];
+    newPictures[imgIndex] = "loading";
+		markerPicturesChange(newPictures);
+
+		// 클라우드서비스 파일 인풋 await -> url 받아오기
+		try {
+			const fileInfo = await cloudinary.uploadFile(files);
+			const newFileUrl = fileInfo.url;
+
+			// url 셋팅
+      const newPictures = [...currentMarker.picture];
+      newPictures[imgIndex] = newFileUrl;
+      markerPicturesChange(newPictures);
+		} catch (e) {
+			console.log(e);
+      const newPictures = [...currentMarker.picture];
+      newPictures.splice(imgIndex + 1, 1);
+			markerPicturesChange(newPictures);
+		}
+	};
+
+	const onPictureClick = (ind) => {
+		setCurrentPicture(ind);
+	};
+
+	const onPictureOver = () => {
+		if (currentPicture !== null) setCurrentPicture(null);
+	};
+
+	const onEditPicture =  () => {
+		// index - currentPicture
+		fileRef.current.click();
+	}
+
+	const onRmPicture = () => {
+		const newPictures = [...currentMarker.picture];
+		newPictures.splice(currentPicture, 1);
+		markerPicturesChange(newPictures);
+	}
+
+
+
 
 	const onInfoInput = () => {
 		const placeVal = placeRef.current.value;
@@ -121,12 +122,57 @@ const MarkerInfo = ({
 				name='description'
 				id='description'
 				cols='30'
-				rows='10'
+				rows='4'
 				ref={descriptionRef}
 				value={currentMarker?.description || ''}
 				onInput={onInfoInput}
 			></textarea>
-			<Imginput currentMarker={currentMarker} />
+      <div className={Styles.picture__box}>
+				{currentMarker?.picture?.map((v, ind) => {
+					return (
+						<div
+							className={Styles.picture}
+							onClick={(e) => {
+								onPictureClick(ind);
+							}}
+							data-index={ind}
+							key={ind}
+						>
+							<div
+								className={`${Styles.picture__img} ${
+									currentPicture === ind ? Styles.img__focus : ''
+								}`}
+							>
+								<button className={Styles.picture__ed} onClick={onEditPicture}>Edit</button>
+								<button className={Styles.picture__rm} onClick={onRmPicture}>Remove</button>
+								{v === 'loading' ? (
+									<div className={Styles.loading}></div>
+								) : (
+									<img
+										className={Styles.picture__content}
+										src={v}
+										alt='thumb'
+									/>
+								)}
+							</div>
+						</div>
+					);
+				})}
+				<div
+					className={Styles.picture}
+					onMouseMove={onPictureOver}
+					onClick={onUploadClick}
+				>
+					<div className={Styles.picture__img}> + </div>
+				</div>
+				<input
+					className={Styles.upload}
+					ref={fileRef}
+					type='file'
+					accept='image/*'
+					onInput={onFileInput}
+				/>
+			</div>
 			<button
 				className={Styles.delete__btn}
 				onClick={() => onMarkerDelete(markerId)}

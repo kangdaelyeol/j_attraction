@@ -3,7 +3,7 @@ import Styles from './create.module.css';
 import Day from './Day';
 import { Wrapper } from '@googlemaps/react-wrapper';
 import Gmap from './Gmap';
-import { Trip, DateInfo } from '../../schema.js';
+import { Trip, DateInfo, DBModel} from '../../schema.js';
 import MarkerInfo from './MarkerInfo';
 import { getNewTrip } from '../../factory.js';
 import { cloudinaryService } from '../../service.js';
@@ -17,6 +17,7 @@ import { cloudinaryService } from '../../service.js';
  */
 
 const cloudinary = new cloudinaryService();
+const dbModel = new DBModel();
 
 //for GoogleMap
 const render = (status) => {
@@ -139,6 +140,17 @@ const Create = () => {
 		setTrip(newTrip);
 	};
 
+	const markerPicturesChange = (pictures) => {
+
+		// get new trip -> renew pictures info
+		const newTrip = getNewTrip(trip)
+		
+		// change trip: getNewTrip -> setTrip;
+		const m_index = markers.indexOf(markerNow)
+		newTrip.days[dayIndex].markers[m_index].picture = pictures;
+		setTrip(newTrip)
+	}
+
 	const onDayClick = (index) => {
 		const changeDayMarkers = trip.days[index].markers;
 		// 기존 marker, path지우기
@@ -253,7 +265,7 @@ const Create = () => {
 	}
 
 	const onSaveClick = () => {
-		
+		dbModel.createTripInDB(trip, "rkdeofuf", pictures)
 	}
 
 	return (
@@ -394,6 +406,7 @@ const Create = () => {
 							onMarkerDelete={onMarkerDelete}
 							imgChange={imgChange}
 							infoChange={infoChange}
+							markerPicturesChange={markerPicturesChange}
 						/>
 					)}
 				</div>

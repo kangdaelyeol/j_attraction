@@ -1,3 +1,5 @@
+import { getNewTrip } from "./factory.js";
+
 export class Trip {
   constructor() {
     this.title = "";
@@ -38,14 +40,30 @@ export class Marker {
 // ************* for save in DB
 
 
-export class TripModel {
-  constructor(trip, owner, pictures) {
-    this.trip = trip;
-    this.pictures = pictures
-    this.owner = owner;
-  }
+export class DBModel {
+  createTripInDB = async (trip, owner, pictures) => {
+    const newTrip = getNewTrip(trip);
+    newTrip.owner = owner;
+    newTrip.picture = [...pictures];
+    newTrip.id = "T" + Date.now();
+    newTrip.createdAt = new Date().toISOString();
+    newTrip.likes = 0;
+    newTrip.comments = [];
 
-  getModelForDB = () => {
 
+    //convert Marker to position
+    newTrip.days.forEach((day, d_index) => {
+      day.markers.forEach((marker, m_index) => {       
+        const markerPosition = marker.marker.getPosition();
+        const lat = markerPosition.lat();
+        const lng = markerPosition.lng(); 
+        newTrip.days[d_index].markers[m_index].onAppear = "";
+        newTrip.days[d_index].markers[m_index].onDelete = "";
+        newTrip.days[d_index].markers[m_index].marker = {lat, lng};
+      })
+    });
+    console.log(newTrip);
+
+    // save newTrip
   }
 }
