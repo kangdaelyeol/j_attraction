@@ -66,4 +66,11 @@ export class DBModel {
 
     // save newTrip
   }
+
+  getTripById = async (id) => {
+    // find Trip info from db
+
+    // convert info
+    // createdAt {relative, absolute}
+  }
 }

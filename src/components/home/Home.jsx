@@ -2,14 +2,14 @@ import React from 'react';
 import Styles from './home.module.css';
 
 const Home = () => {
+	// get Trips for contents
+	
+
+	// make Logic -> contents -> per 10 infinite scroll
 	return (
 		<div className={`${Styles.home}`}>
-			<span>홈</span>
-			<div className={Styles.list}>
-				<div className={Styles.comp}>1</div>
-				<div className={Styles.comp}>2</div>
-				<div className={Styles.comp}>3</div>
-			</div>
+			content map
+			<div className="loadingComp"></div>
 		</div>
 	);
 };
