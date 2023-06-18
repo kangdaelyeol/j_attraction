@@ -1,4 +1,7 @@
 import { getNewTrip } from "./factory.js";
+import { FirestoreService } from "./service.js";
+
+const fireStore = new FirestoreService();
 
 export class Trip {
   constructor() {
@@ -50,9 +53,11 @@ export class DBModel {
     newTrip.likes = 0;
     newTrip.comments = [];
 
+    //convert days format(DateInfo) to object
 
     //convert Marker to position
     newTrip.days.forEach((day, d_index) => {
+      newTrip.days[d_index] = {...day};
       day.markers.forEach((marker, m_index) => {       
         const markerPosition = marker.marker.getPosition();
         const lat = markerPosition.lat();
@@ -63,8 +68,8 @@ export class DBModel {
       })
     });
     console.log(newTrip);
-
-    // save newTrip
+   const result = await fireStore.createTrip(newTrip);
+   console.log(result);
   }
 
   getTripById = async (id) => {
@@ -74,3 +79,4 @@ export class DBModel {
     // createdAt {relative, absolute}
   }
 }
+

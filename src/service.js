@@ -39,11 +39,9 @@ const firebaseConfig = {
 	appId: process.env.REACT_APP_APPID,
 };
 
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app)
-
+const db = getFirestore(app);
 
 export class FirebaseService {
 	checkLoginState = (setLogin) => {
@@ -112,7 +110,7 @@ export class FirebaseService {
 			if (!userInfoFromDB) {
 				await this.createUser(user);
 			}
-      console.log(user);
+			console.log(user);
 			return {
 				type: 'success',
 				user,
@@ -168,5 +166,16 @@ export class cloudinaryService {
 		// const res = await fileRes.json();
 
 		return fileRes.data;
+	};
+}
+
+export class FirestoreService {
+	createTrip = async (trip) => {
+		try {
+			await setDoc(doc(db, 'trips', trip.id), trip);
+			return true;
+		} catch (e) {
+			return e;
+		}
 	};
 }

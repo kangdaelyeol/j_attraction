@@ -6,7 +6,11 @@ import Header from './components/header/header';
 import Create from './components/create/Create';
 
 const App = ({firebase}) => {
-	const [isLogin, setLogin] = useState(false);
+	const [isLogin, setLogin] = useState({
+		uid:"12345",
+		email: "kdy0510123@gmail.com",
+		photoURL: ""
+	});
 	const onSignOut = async () => {
 		const signOut = await firebase.signOut();
 		if (signOut)

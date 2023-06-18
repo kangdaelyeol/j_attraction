@@ -91,7 +91,7 @@ const Gmap = ({
 		if (ref.current && !map) {
 			setMap(
 				new window.google.maps.Map(ref.current, {
-					center: { lat: 37.569227, lng: 126.9777256 },
+					center: { lat: 35.681135123999454, lng: 139.7646548648397 },
 					zoom: 14,
 					mapTypeControl: true,
 					mapTypeControlOptions: {
