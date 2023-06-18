@@ -6,7 +6,7 @@ import Recent from '../recent/Recent';
 import { useNavigate } from 'react-router';
 const Main = ({onGoogleLogin, onSignOut, isLogin, setLogin, fireStore}) => {
 	const [info, setInfo] = useState('home');
-	const [trips, setTrips] = useState([]);
+	const [trips, setTrips] = useState(false);
 	const navigate = useNavigate();
 	const onInfoClick = (e) => {
 		const infoName = e.target.dataset.name;
@@ -86,7 +86,7 @@ const Main = ({onGoogleLogin, onSignOut, isLogin, setLogin, fireStore}) => {
 			</div>
 			<div className={Styles.main}>
 				{info === 'home' ? (
-					<Home viewName={info} />
+					<Home viewName={info} trips={trips} />
 				) : info === 'recent' ? (
 					<Recent viewName={info} />
 				) : (

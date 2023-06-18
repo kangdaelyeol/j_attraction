@@ -26,7 +26,6 @@ const render = (status) => {
 };
 
 const Create = () => {
-
 	const navigate = useNavigate();
 	// for storing in db
 	const [trip, setTrip] = useState(new Trip());
@@ -277,19 +276,23 @@ const Create = () => {
 			budget: budgetRef.current.value,
 			description: desRef.current.value,
 			date: durationRef.current.value,
-			category: seasonRef.current.value
-		}
-		const result = await dbModel.createTripInDB(trip, 'rkdeofuf', pictures, info);
-		if(result === true)	navigate("/main")
-
+			category: seasonRef.current.value,
+		};
+		const result = await dbModel.createTripInDB(
+			trip,
+			'rkdeofuf',
+			pictures,
+			info
+		);
+		if (result === true) navigate('/main');
 	};
 
 	return (
 		<div className={Styles.container}>
 			<div className={Styles.title}>Create</div>
 			<div className={Styles.title__input}>
-				<span>제목: </span>
-				<input ref={titleRef}type='text' placeholder='Title' />
+				<span className={Styles.small__title}>제목: </span>
+				<input ref={titleRef} type='text' placeholder='Title' />
 			</div>
 			<div className={Styles.summary}>
 				<span>정보: </span>

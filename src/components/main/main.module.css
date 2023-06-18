@@ -5,8 +5,9 @@
 .nav {
 	display: flex;
 	flex-direction: column;
-	background-color: #5e8ebd;
+	background-color: #080808;
 	height: 100vh;
+	width: 170px;
 	position: fixed;
 }
 
@@ -39,4 +40,9 @@
 
 .logout span{
   color: #2c2d2d;
+}
+
+.main{
+	position: relative;
+	left:170px;
 }

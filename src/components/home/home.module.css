@@ -1,0 +1,8 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 700px;
+  border-right: 1px solid #ecf2f8;
+  height: 100vh;
+}

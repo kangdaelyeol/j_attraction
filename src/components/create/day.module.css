@@ -12,7 +12,7 @@
 .title {
   font-size: 2em;
   font-weight: bold;
-  color: #1f5f9f;
+  color: white;
   flex-shrink: 0;
   margin-right: 10px;
 }
@@ -47,7 +47,7 @@
 
 .route__btn {
 	margin: 0 10px;
-  background-color: #b7c8f8;
+  background-color: #222222;
   padding: 0 10px;
   height: 50px;
   display: flex;
@@ -56,15 +56,16 @@
   border-radius: 20px;
 	cursor: pointer;
   font-weight: bold;
-  color:#123456;
+  color:#555555;
   flex-shrink: 0;
 }
 
 .route__focus {
-  background-color: #2e7ecf;
+  background-color: #555555;
   color: #ffffff;
 }
 .next {
+  color:white;
 	margin: 0 5px;
   font-weight: bold;
   font-size: 20px;

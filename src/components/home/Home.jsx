@@ -1,15 +1,15 @@
 import React from 'react';
 import Styles from './home.module.css';
+import Content from "../content/Content";
 
-const Home = () => {
+const Home = ({trips}) => {
 	// get Trips for contents
 	
 
 	// make Logic -> contents -> per 10 infinite scroll
 	return (
 		<div className={`${Styles.home}`}>
-			content map
-			<div className="loadingComp"></div>
+			{trips ? trips.map((trip, ind) => <Content key={ind} trip={trip}/>) : <div className="loadingComp">loading</div>}
 		</div>
 	);
 };
