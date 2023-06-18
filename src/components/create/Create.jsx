@@ -7,6 +7,7 @@ import { Trip, DateInfo, DBModel } from '../../schema.js';
 import MarkerInfo from './MarkerInfo';
 import { getNewTrip } from '../../factory.js';
 import { cloudinaryService } from '../../service.js';
+import { useNavigate } from 'react-router';
 /** required
  * google Map
  * title
@@ -25,6 +26,8 @@ const render = (status) => {
 };
 
 const Create = () => {
+
+	const navigate = useNavigate();
 	// for storing in db
 	const [trip, setTrip] = useState(new Trip());
 
@@ -38,6 +41,12 @@ const Create = () => {
 	const currentDay = trip?.days[dayIndex];
 	const markers = currentDay?.markers;
 	const fileRef = useRef();
+	const titleRef = useRef();
+	const seasonRef = useRef();
+	const durationRef = useRef();
+	const desRef = useRef();
+	const budgetRef = useRef();
+
 	const markerNow = markers?.find((v) => {
 		return v.id === currentMarker;
 	});
@@ -262,8 +271,17 @@ const Create = () => {
 		setPicture(newPicture);
 	};
 
-	const onSaveClick = () => {
-		dbModel.createTripInDB(trip, 'rkdeofuf', pictures);
+	const onSaveClick = async () => {
+		const info = {
+			title: titleRef.current.value,
+			budget: budgetRef.current.value,
+			description: desRef.current.value,
+			date: durationRef.current.value,
+			category: seasonRef.current.value
+		}
+		const result = await dbModel.createTripInDB(trip, 'rkdeofuf', pictures, info);
+		if(result === true)	navigate("/main")
+
 	};
 
 	return (
@@ -271,11 +289,11 @@ const Create = () => {
 			<div className={Styles.title}>Create</div>
 			<div className={Styles.title__input}>
 				<span>제목: </span>
-				<input type='text' placeholder='Title' />
+				<input ref={titleRef}type='text' placeholder='Title' />
 			</div>
 			<div className={Styles.summary}>
 				<span>정보: </span>
-				<select name='season' id='season'>
+				<select ref={seasonRef} name='season' id='season'>
 					<option className={Styles.season__tag} value=''>
 						계절
 					</option>
@@ -284,10 +302,11 @@ const Create = () => {
 					<option value='autumn'>가을</option>
 					<option value='winter'>겨울</option>
 				</select>
-				<input type='text' placeholder='Budget' />
-				<input type='text' placeholder='Duration' />
+				<input ref={budgetRef} type='text' placeholder='Budget' />
+				<input ref={durationRef} type='text' placeholder='Duration' />
 			</div>
 			<textarea
+				ref={desRef}
 				name='introduction'
 				id='introduction'
 				className={Styles.introduction}

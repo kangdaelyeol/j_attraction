@@ -5,7 +5,7 @@ import Main from './components/main/Main';
 import Header from './components/header/header';
 import Create from './components/create/Create';
 
-const App = ({firebase}) => {
+const App = ({firebase, fireStore}) => {
 	const [isLogin, setLogin] = useState({
 		uid:"12345",
 		email: "kdy0510123@gmail.com",
@@ -41,7 +41,7 @@ const App = ({firebase}) => {
 		<BrowserRouter>
 			<div className={Styles.app}>
 				<Routes>
-					<Route path='/main' exact={true} element={<Main onGoogleLogin={onGoogleLogin} onSignOut={onSignOut} isLogin={isLogin}/>} />
+					<Route path='/main' exact={true} element={<Main onGoogleLogin={onGoogleLogin} onSignOut={onSignOut} isLogin={isLogin} fireStore={fireStore} />} />
 					<Route path='/create' exact={true} element={<Create />} />
 				</Routes>
 			</div>

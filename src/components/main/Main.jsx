@@ -4,14 +4,25 @@ import Home from '../home/Home';
 import Recommend from '../recommend/Recommend';
 import Recent from '../recent/Recent';
 import { useNavigate } from 'react-router';
-const Main = ({onGoogleLogin, onSignOut, isLogin, setLogin}) => {
+const Main = ({onGoogleLogin, onSignOut, isLogin, setLogin, fireStore}) => {
 	const [info, setInfo] = useState('home');
+	const [trips, setTrips] = useState([]);
 	const navigate = useNavigate();
 	const onInfoClick = (e) => {
 		const infoName = e.target.dataset.name;
 		if (infoName === info) return;
 		else return setInfo(infoName);
 	};
+
+	useEffect(() => {
+		const fetchTrips = async () => {
+			const trips = await fireStore.getLatestTrips();
+			console.log(trips);
+			setTrips(trips);
+		};
+	
+		fetchTrips();
+	}, [fireStore]);
 
 	const onNavClick = (e) => {
 		const loc = e.target.dataset.name;

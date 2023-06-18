@@ -18,6 +18,7 @@ import {
 	deleteDoc,
 	orderBy,
 } from 'firebase/firestore';
+import { modifyTimeInTrip } from './factory.js';
 
 const CLOUD_NAME = 'dfvqmpyji';
 const UPLOAD_PRESET = 'qzlqkpry';
@@ -170,12 +171,90 @@ export class cloudinaryService {
 }
 
 export class FirestoreService {
+	// utilize it for updating when recipe, comment info change
+	getUserById = async (uid) => {
+		if (!uid) return false;
+		let userInfo;
+		const ref = collection(db, 'users');
+		const q = query(ref, where('uid', '==', uid));
+		const snapshot = await getDocs(q);
+		snapshot.forEach((v) => {
+			userInfo = v.data();
+		});
+		return userInfo;
+	};
+	modifyOwnerToInfo = async (trips) => {
+		const ownerIdList = [];
+		trips.forEach((trip) => {
+			if (!ownerIdList.includes(trip.owner) && trip.owner)
+				ownerIdList.push(trip.owner);
+		});
+		console.log(ownerIdList);
+		const ownerPromises = ownerIdList.map((uid) => {
+			return this.getUserById(uid);
+		});
+		const ownerList = await Promise.all(ownerPromises);
+		// 복잡도 -> trips * ownerList
+		trips.forEach((trip) => {
+			ownerList.forEach((user) => {
+				const { uid, displayName, email, profile } = user;
+				if (user.uid === trip.owner)
+					trip.owner = { uid, displayName, email, profile };
+			});
+		});
+	};
+
 	createTrip = async (trip) => {
 		try {
 			await setDoc(doc(db, 'trips', trip.id), trip);
 			return true;
 		} catch (e) {
 			return e;
+		}
+	};
+
+	getTrips = async () => {};
+
+	getSnapShotForAllTrips = async () => {
+		const ref = collection(db, 'trips');
+		const q = query(ref, orderBy('createdAt', 'desc'));
+		return await getDocs(q);
+	};
+
+	getAllTrips = async () => {
+		const trips = [];
+		const snapshot = await this.getSnapShotForAllTrips();
+
+		snapshot.forEach((doc) => {
+			trips.push(doc.data());
+		});
+		return trips;
+	};
+
+	getLatestTrips = async () => {
+		const allTrips = await this.getAllTrips();
+		modifyTimeInTrip(allTrips);
+		this.modifyOwnerToInfo(allTrips);
+		return allTrips;
+	};
+
+	getTripById = async (id) => {
+		const tripRef = collection(db, 'trips');
+		const q = query(tripRef, where('id', '==', id));
+		try {
+			let trip; // undefined (default)
+			const snapshot = await getDocs(q);
+			snapshot.forEach((doc) => {
+				trip = doc.data();
+			});
+			if (!trip) return false;
+			else {
+				modifyTimeInTrip(trip);
+				return trip;
+			}
+		} catch (e) {
+			console.log(e);
+			return false;
 		}
 	};
 }

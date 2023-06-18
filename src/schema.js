@@ -12,7 +12,6 @@ export class Trip {
     this.picture  = [];
     this.days = [new DateInfo()];  // Date[]
     this.category = "";
-    this.season = "";
   }
 }
 
@@ -44,8 +43,8 @@ export class Marker {
 
 
 export class DBModel {
-  createTripInDB = async (trip, owner, pictures) => {
-    const newTrip = getNewTrip(trip);
+  createTripInDB = async (trip, owner, pictures, info) => {
+    const newTrip = getNewTrip(trip, info);
     newTrip.owner = owner;
     newTrip.picture = [...pictures];
     newTrip.id = "T" + Date.now();
@@ -70,6 +69,7 @@ export class DBModel {
     console.log(newTrip);
    const result = await fireStore.createTrip(newTrip);
    console.log(result);
+   return result;
   }
 
   getTripById = async (id) => {
