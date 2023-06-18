@@ -5,6 +5,7 @@
 	border-radius: 3px;
 	margin-bottom: 60px;
 	/* background-color: white; */
+  color: white;
 }
 
 .header {
@@ -70,6 +71,7 @@
 	justify-content: space-between;
 	align-items: center;
 	margin-bottom: 8px;
+  font-size: 25px;
 }
 
 .footer__middle {
@@ -78,9 +80,17 @@
 
 .left, .right{
   position: absolute;
-  width: 50%;
+  width: 30%;
   height: 100%;
   cursor: pointer;
+}
+
+.middle {
+  position: absolute;
+  height: 100%;
+  cursor: pointer;
+  width: 40%;
+  left:30%
 }
 
 .left{
@@ -89,4 +99,8 @@
 
 .right {
   right: 0px;
+}
+
+.left:hover, .middle:hover , .right:hover{
+  background-color: rgba(0,0,0,0.2);
 }
