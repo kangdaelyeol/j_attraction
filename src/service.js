@@ -1,7 +1,5 @@
 import axios from 'axios';
-
 import { initializeApp } from 'firebase/app';
-import { getAnalytics } from 'firebase/analytics';
 import {
 	GoogleAuthProvider,
 	signInWithPopup,
@@ -39,13 +37,12 @@ const firebaseConfig = {
 	storageBucket: 'jattraction-79aac.appspot.com',
 	messagingSenderId: '628041195084',
 	appId: process.env.REACT_APP_APPID,
-	measurementId: 'G-Q9TK0X5MSY',
 };
 
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
+const db = getFirestore(app)
 
 
 export class FirebaseService {
@@ -115,7 +112,7 @@ export class FirebaseService {
 			if (!userInfoFromDB) {
 				await this.createUser(user);
 			}
-
+      console.log(user);
 			return {
 				type: 'success',
 				user,

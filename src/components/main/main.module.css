@@ -1,24 +1,42 @@
-.container{
-  display: flex;
-  width: 100%;
+.container {
+	display: flex;
+	width: 100%;
 }
 .nav {
-  display: flex;
-  flex-direction: column;
-  background-color: powderblue;
+	display: flex;
+	flex-direction: column;
+	background-color: #5e8ebd;
+	height: 100vh;
+	position: fixed;
 }
 
-.top, .bottom {
-  display: flex;
-  flex-direction: column;
-  padding: 10px 20px;
+.top,
+.bottom {
+	display: flex;
+	flex-direction: column;
+	padding: 10px 20px;
 }
 
-.top div, .bottom div {
-  border: 1px solid black;
-  padding: 10px;
-  width: 150px;
-  margin-bottom: 20px;
-  border-radius: 10px;
+.top div,
+.bottom div {
+	padding: 10px;
+	width: 60px;
+	margin-bottom: 20px;
+	border-radius: 10px;
+	cursor: pointer;
 }
 
+.top div,
+.bottom div {
+	cursor: pointer;
+	font-size: 15px;
+  color:white;
+}
+.top div:hover,
+.bottom div:hover {
+  color:#c0d7f1;
+}
+
+.logout span{
+  color: #2c2d2d;
+}

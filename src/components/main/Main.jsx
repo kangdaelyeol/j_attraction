@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Styles from './main.module.css';
 import Home from '../home/Home';
 import Recommend from '../recommend/Recommend';
 import Recent from '../recent/Recent';
 import { useNavigate } from 'react-router';
-const Main = () => {
+const Main = ({onGoogleLogin, onSignOut, isLogin, setLogin}) => {
 	const [info, setInfo] = useState('home');
 	const navigate = useNavigate();
 	const onInfoClick = (e) => {
@@ -17,7 +17,7 @@ const Main = () => {
 		const loc = e.target.dataset.name;
 		navigate(`/${loc}`);
 	};
-	
+
 	return (
 		<div className={Styles.container}>
 			<div className={Styles.nav}>
@@ -69,6 +69,8 @@ const Main = () => {
 					>
 						여행 검색
 					</div>
+					{isLogin ? <div onClick={onSignOut} className={Styles.logout}><span>로그아웃</span></div> : <div onClick={onGoogleLogin} className={Styles.logout}><span>로그인</span></div>}
+					
 				</div>
 			</div>
 			<div className={Styles.main}>

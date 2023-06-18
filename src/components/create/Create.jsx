@@ -3,7 +3,7 @@ import Styles from './create.module.css';
 import Day from './Day';
 import { Wrapper } from '@googlemaps/react-wrapper';
 import Gmap from './Gmap';
-import { Trip, DateInfo, DBModel} from '../../schema.js';
+import { Trip, DateInfo, DBModel } from '../../schema.js';
 import MarkerInfo from './MarkerInfo';
 import { getNewTrip } from '../../factory.js';
 import { cloudinaryService } from '../../service.js';
@@ -35,9 +35,12 @@ const Create = () => {
 	const [pictures, setPicture] = useState([]);
 	const [currentPicture, setCurrentPicture] = useState(null);
 	// value for reducing duplicated code -> to access rapidly
-	const currentDay = trip.days[dayIndex];
+	const currentDay = trip?.days[dayIndex];
 	const markers = currentDay?.markers;
 	const fileRef = useRef();
+	const markerNow = markers?.find((v) => {
+		return v.id === currentMarker;
+	});
 
 	const addMarker = (marker) => {
 		//기존 path 지우기
@@ -46,7 +49,6 @@ const Create = () => {
 		markers?.forEach((v) => {
 			newMarkers.push({ ...v });
 		});
-		console.log('ADDMARKER');
 		newMarkers.push({ ...marker });
 		const newTrip = getNewTrip(trip);
 		newTrip.days[dayIndex].markers = newMarkers;
@@ -73,9 +75,6 @@ const Create = () => {
 	// for editing marker info
 	console.log('current Marker: ', currentMarker);
 
-	const markerNow = markers?.find((v) => {
-		return v.id === currentMarker;
-	});
 	// for Google map API
 	const [map, setMap] = useState();
 
@@ -141,15 +140,14 @@ const Create = () => {
 	};
 
 	const markerPicturesChange = (pictures) => {
-
 		// get new trip -> renew pictures info
-		const newTrip = getNewTrip(trip)
-		
+		const newTrip = getNewTrip(trip);
+
 		// change trip: getNewTrip -> setTrip;
-		const m_index = markers.indexOf(markerNow)
+		const m_index = markers.indexOf(markerNow);
 		newTrip.days[dayIndex].markers[m_index].picture = pictures;
-		setTrip(newTrip)
-	}
+		setTrip(newTrip);
+	};
 
 	const onDayClick = (index) => {
 		const changeDayMarkers = trip.days[index].markers;
@@ -220,7 +218,7 @@ const Create = () => {
 		const imgIndex = currentPicture || pictures.length;
 		setPicture((current) => {
 			const newPictures = [...current];
-			newPictures[imgIndex] = "loading";
+			newPictures[imgIndex] = 'loading';
 			return newPictures;
 		});
 
@@ -253,20 +251,20 @@ const Create = () => {
 		if (currentPicture !== null) setCurrentPicture(null);
 	};
 
-	const onEditPicture =  () => {
+	const onEditPicture = () => {
 		// index - currentPicture
 		fileRef.current.click();
-	}
+	};
 
 	const onRmPicture = () => {
 		const newPicture = [...pictures];
 		newPicture.splice(currentPicture, 1);
 		setPicture(newPicture);
-	}
+	};
 
 	const onSaveClick = () => {
-		dbModel.createTripInDB(trip, "rkdeofuf", pictures)
-	}
+		dbModel.createTripInDB(trip, 'rkdeofuf', pictures);
+	};
 
 	return (
 		<div className={Styles.container}>
@@ -314,8 +312,12 @@ const Create = () => {
 									currentPicture === ind ? Styles.img__focus : ''
 								}`}
 							>
-								<button className={Styles.picture__ed} onClick={onEditPicture}>Edit</button>
-								<button className={Styles.picture__rm} onClick={onRmPicture}>Remove</button>
+								<button className={Styles.picture__ed} onClick={onEditPicture}>
+									Edit
+								</button>
+								<button className={Styles.picture__rm} onClick={onRmPicture}>
+									Remove
+								</button>
 								{v === 'loading' ? (
 									<div className={Styles.loading}></div>
 								) : (
@@ -412,7 +414,9 @@ const Create = () => {
 				</div>
 			</div>
 
-			<button onClick={onSaveClick} className={Styles.save__btn}>save!</button>
+			<button onClick={onSaveClick} className={Styles.save__btn}>
+				save!
+			</button>
 		</div>
 	);
 };

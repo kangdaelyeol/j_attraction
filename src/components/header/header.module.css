@@ -15,3 +15,12 @@
   justify-content: center;
   align-items: center;
 }
+
+.login, .title {
+  transition: .2s;
+  cursor: pointer;
+}
+
+.login:hover, .title:hover {
+  color:#a5cef7
+}
