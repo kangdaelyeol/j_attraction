@@ -101,3 +101,31 @@ export const getNewTrip = (trip, info) => {
 };
 
 
+export const drawPath = (markers, map) => {
+	const pathCoordinates = [];
+	markers.forEach((m) => {
+		pathCoordinates.push(m.marker.getPosition());
+	});
+
+	const newPath = new window.google.maps.Polyline({
+		path: pathCoordinates,
+		geodesic: true,
+		strokeColor: '#FF0000',
+		strokeOpacity: 0.2,
+		strokeWeight: 6,
+	});
+
+	newPath.setMap(map);
+	return newPath;
+}
+
+export const convertMarkers = (trip) => {
+	const newTrip = {...trip};
+	console.log(newTrip);
+	newTrip.days.forEach((day, dindex) => {
+		day.markers.forEach((marker, mindex) => {
+			newTrip.days[dindex].markers[mindex].marker = new window.google.maps.Marker({lat: marker.marker.lat, lng: marker.marker.lng});
+		})
+	})
+	return newTrip;
+}
