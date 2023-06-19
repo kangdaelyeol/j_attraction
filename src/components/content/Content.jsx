@@ -10,13 +10,13 @@ import {
 
 const Content = ({ trip }) => {
 	const { title, category, createdAt, description, picture, owner } = trip;
-	console.log(trip);
 	const [boxPosition, setBoxPosition] = useState(0);
   const [detail, setDetail] = useState(false);
 	const LEFTUNIT = 500;
 	const MAXLEFT = (picture.length - 1) * LEFTUNIT;
+	console.log(MAXLEFT, boxPosition);
 	const onLeftClick = () => {
-		if (-MAXLEFT < boxPosition) return;
+		if (-boxPosition<=0) return;
 		boxRef.current.style.left = `${boxPosition + LEFTUNIT}px`;
 		setBoxPosition((c) => c + LEFTUNIT);
 	};
@@ -46,7 +46,7 @@ const Content = ({ trip }) => {
 					</div>
 					<div className={Styles.profile__info}>
 						<div className={Styles.info__top}>
-							<span className={Styles.owner}>{owner.displayName}</span>{' '}
+							<span className={Styles.owner}>{owner.displayName}</span>
 							<div className={Styles.createdAt}>{createdAt.relative}</div>
 						</div>
 					</div>

@@ -34,8 +34,8 @@ const Dmap = ({
 			<div
 				ref={ref}
 				style={{
-          width: '400px',
-					height: '200px'
+          width: '500px',
+					height: '250px'
 				}}
 			></div>
 		</div>

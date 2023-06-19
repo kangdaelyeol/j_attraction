@@ -15,13 +15,6 @@ const Detail = ({ trip, setDetail }) => {
 		setCurrentDay(dindex);
 	};
 	// markers 변환
-	// eslint-disable-next-line no-mixed-operators
-	// const newTrip = map && convertMarkers(trip, map) || null;
-	// const dayMarkers = [];
-	// newTrip?.days?.forEach((day) => {
-	// 	map && dayMarkers.push([...day.markers]);
-	// });
-	// console.log(newTrip);
 
 	// 매 currentDay 바뀔 때 마다 호출 -> path
 	useEffect(() => {
@@ -73,8 +66,13 @@ const Detail = ({ trip, setDetail }) => {
 		boxRef.current.style.left = '0px';
 	}, []);
 
+  const onBtnClick = () => {
+    setDetail(false);
+  }
+  
 	return (
 		<div className={Styles.container}>
+      <button className={Styles.escape__btn} onClick={onBtnClick}> x </button>
 			<div className={Styles.detail}>
 				<div className={Styles.map__container}>
 					<div className={Styles.top}>
