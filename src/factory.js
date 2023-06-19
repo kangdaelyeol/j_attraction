@@ -25,10 +25,8 @@ export const modifyTime = (ISOString) => {
 
 	switch (timeUnit) {
 		case 'second':
-			if(timeUnit < 1000)
-			relative = `방금 전`;
-			else
-			relative = `${timeGapSec}초 전`;
+			if (timeUnit < 1000) relative = `방금 전`;
+			else relative = `${timeGapSec}초 전`;
 			break;
 		case 'minute':
 			relative = `${Math.floor(timeGapSec / minute)}분 전`;
@@ -56,7 +54,6 @@ export const modifyTime = (ISOString) => {
 	};
 };
 
-
 // Method - modyfyTimeInComment / Recipe
 // change ISOString of Time into format for client
 export const modifyTimeInComment = (comments) => {
@@ -64,16 +61,13 @@ export const modifyTimeInComment = (comments) => {
 		comments[i].createdAt = modifyTime(comments[i].createdAt);
 		comments[i].updatedAt = modifyTime(comments[i].updatedAt);
 	}
-}
+};
 
 export const modifyTimeInTrip = (trips) => {
 	for (let i = 0; i < trips.length; i++) {
 		trips[i].createdAt = modifyTime(trips[i].createdAt);
 	}
 };
-
-
-
 
 export const getNewTrip = (trip, info) => {
 	// trip -> make new days (day[]);
@@ -96,15 +90,19 @@ export const getNewTrip = (trip, info) => {
 			];
 		});
 	});
-  newTrip.days = newDays;
+	newTrip.days = newDays;
 	return newTrip;
 };
 
-
 export const drawPath = (markers, map) => {
-	const pathCoordinates = [];
+	let bounds = new window.google.maps.LatLngBounds();
+	let pathCoordinates = [];
 	markers.forEach((m) => {
+		console.log(m.marker);
+		m.onAppear();
+		bounds.extend(m.marker.getPosition());
 		pathCoordinates.push(m.marker.getPosition());
+		console.log(m.marker.getPosition());
 	});
 
 	const newPath = new window.google.maps.Polyline({
@@ -116,16 +114,61 @@ export const drawPath = (markers, map) => {
 	});
 
 	newPath.setMap(map);
+	map.fitBounds(bounds);
 	return newPath;
-}
+};
 
-export const convertMarkers = (trip) => {
-	const newTrip = {...trip};
+export const convertMarkers = (trip, map) => {
+	const newTrip = { ...trip };
 	console.log(newTrip);
 	newTrip.days.forEach((day, dindex) => {
 		day.markers.forEach((marker, mindex) => {
-			newTrip.days[dindex].markers[mindex].marker = new window.google.maps.Marker({lat: marker.marker.lat, lng: marker.marker.lng});
+			const lat = marker.marker.lat;
+			const lng = marker.marker.lng;
+			console.log(lat, lng);
+			const myLatlng = new window.google.maps.LatLng(lat, lng);
+			console.log(myLatlng);
+			const newM = new window.google.maps.Marker(
+				{position: myLatlng}
+			);
+			newTrip.days[dindex].markers[mindex].marker = newM;
+			newTrip.days[dindex].markers[mindex].onAppear = () => {
+				newM.setMap(map);
+			};
+			newTrip.days[dindex].markers[mindex].onDelete = () => {
+				newM.setMap(null);
+			};
+		});
+	});
+	return newTrip;
+};
+
+export const getMarkers = (trip, map) => {
+	const newMarkers = [];
+	trip?.days?.forEach((day) => {
+		map && newMarkers.push([...day.markers]);
+	});
+	newMarkers.forEach((markers, msindex) => {
+		markers.forEach((marker, mindex) => {
+			const lat = marker.marker.lat;
+			const lng = marker.marker.lng;
+			console.log(lat, lng);
+			const myLatlng = new window.google.maps.LatLng(lat, lng);
+			console.log(myLatlng);
+			const newM = new window.google.maps.Marker(
+				{position: myLatlng}
+			);
+
+			newMarkers[msindex][mindex] = {...marker};
+			newMarkers[msindex][mindex].onAppear = () => {
+				newM.setMap(map);
+			}
+			newMarkers[msindex][mindex].onDelete = () => {
+				newM.setMap(null);
+			}
+			newMarkers[msindex][mindex].marker = newM;
 		})
 	})
-	return newTrip;
+
+	return newMarkers;
 }
