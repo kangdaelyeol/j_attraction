@@ -37,7 +37,6 @@ const Main = ({onGoogleLogin, onSignOut, isLogin, setLogin, fireStore}) => {
 						home
 					</div>
 					<div
-						onClick={onInfoClick}
 						data-name='recent'
 						className={Styles.recent}
 					>

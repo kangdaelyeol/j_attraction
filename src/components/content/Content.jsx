@@ -14,7 +14,6 @@ const Content = ({ trip }) => {
   const [detail, setDetail] = useState(false);
 	const LEFTUNIT = 500;
 	const MAXLEFT = (picture.length - 1) * LEFTUNIT;
-	console.log(MAXLEFT, boxPosition);
 	const onLeftClick = () => {
 		if (-boxPosition<=0) return;
 		boxRef.current.style.left = `${boxPosition + LEFTUNIT}px`;
